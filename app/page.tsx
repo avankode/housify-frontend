@@ -1,103 +1,293 @@
-import Image from "next/image";
+// "use client"; // This must be a client component to use hooks
+//
+// import React, { useState, useEffect } from 'react';
+//
+// // Define a type for the user data we expect from the backend
+// interface User {
+//     username: string;
+//     email: string;
+// }
+//
+// // --- Dashboard Component ---
+// // This is the view for a logged-in user.
+// const Dashboard = ({ user }: { user: User }) => {
+//     return (
+//         <main className="flex min-h-screen flex-col items-center justify-center bg-green-50 p-8">
+//             <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl">
+//                 <h1 className="mb-4 text-3xl font-bold text-gray-800">Welcome to Housify!</h1>
+//                 <p className="mb-6 text-lg text-gray-600">
+//                     You are logged in as <span className="font-semibold text-green-600">{user.username}</span>.
+//                 </p>
+//                 <div className="mt-8 space-y-4">
+//                     <button className="w-full rounded-md bg-black px-6 py-3 text-lg font-semibold text-white transition-transform duration-200 hover:scale-105">
+//                         Create a House
+//                     </button>
+//                     <button className="w-full rounded-md bg-gray-200 px-6 py-3 text-lg font-semibold text-black transition-transform duration-200 hover:scale-105">
+//                         Join a House
+//                     </button>
+//                 </div>
+//                 <a
+//                     href="http://localhost:8000/accounts/logout/"
+//                     className="mt-8 inline-block text-sm font-medium text-gray-500 hover:text-black"
+//                 >
+//                     Logout
+//                 </a>
+//             </div>
+//         </main>
+//     );
+// };
+//
+//
+// // --- Main Page Component ---
+// // This component decides whether to show the Login page or the Dashboard.
+// export default function Home() {
+//     // State to hold the user data and loading status
+//     const [user, setUser] = useState<User | null>(null);
+//     const [loading, setLoading] = useState(true);
+//
+//     // useEffect runs when the component mounts to check the user's login status
+//     useEffect(() => {
+//         const fetchUser = async () => {
+//             try {
+//                 const response = await fetch('http://localhost:8000/api/user/', {
+//                     credentials: 'include', // IMPORTANT: This sends the session cookie
+//                 });
+//
+//                 if (response.ok) {
+//                     const userData = await response.json();
+//                     setUser(userData);
+//                 } else {
+//                     setUser(null);
+//                 }
+//             } catch (error) {
+//                 console.error("Failed to fetch user:", error);
+//                 setUser(null);
+//             } finally {
+//                 setLoading(false);
+//             }
+//         };
+//
+//         fetchUser();
+//     }, []); // The empty array ensures this runs only once
+//
+//     // --- Conditional Rendering Logic ---
+//
+//     if (loading) {
+//         return (
+//             <main className="flex min-h-screen flex-col items-center justify-center bg-green-50">
+//                 <p className="text-2xl font-semibold text-gray-700">Loading...</p>
+//             </main>
+//         );
+//     }
+//
+//     if (user) {
+//         return <Dashboard user={user} />;
+//     }
+//
+//     return (
+//         <main className="flex min-h-screen flex-col items-center justify-center bg-green-50 p-4">
+//             <div className="w-full max-w-sm rounded-lg bg-white p-8 text-center shadow-2xl">
+//                 <img
+//                     src="/housifylogo.png"
+//                     alt="Housify Logo"
+//                     width={250}
+//                     height={250}
+//                     className="mx-auto"
+//                 />
+//                 <h1 className="mb-2 text-3xl font-bold text-gray-900">
+//                     Welcome to <span className="text-green-600">Housify</span>
+//                 </h1>
+//                 <p className="mb-8 text-gray-600">Your shared home, simplified.</p>
+//
+//                 <a
+//                     href="http://localhost:8000/accounts/google/login/"
+//                     className="group inline-flex w-full items-center justify-center rounded-md bg-black px-4 py-3 text-lg font-semibold text-white transition-transform duration-200 hover:scale-105"
+//                 >
+//                     <svg className="mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+//                         <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path>
+//                         <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path>
+//                         <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.223 0-9.657-3.657-11.127-8.481l-6.571 4.819C9.656 39.663 16.318 44 24 44z"></path>
+//                         <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C42.012 36.49 44 30.856 44 24c0-1.341-.138-2.65-.389-3.917z"></path>
+//                     </svg>
+//                     Sign In with Google
+//                 </a>
+//             </div>
+//         </main>
+//     );
+// }
+//
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+"use client"; // This must be a client component to use hooks
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+import React, { useState, useEffect } from 'react';
+
+// Define a type for the user data we expect from the backend
+interface User {
+    username: string;
+    email: string;
 }
+
+// --- Helper function to get the CSRF token from cookies ---
+// Django requires this for secure POST requests.
+const getCookie = (name: string) => {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// --- Dashboard Component ---
+// This is the view for a logged-in user.
+const Dashboard = ({ user, onLogout }: { user: User; onLogout: () => void }) => {
+    const [confirmingLogout, setConfirmingLogout] = useState(false);
+
+    const handleLogoutConfirm = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/api/logout/', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken') || '',
+                },
+            });
+
+            if (response.ok) {
+                onLogout(); // This will update the state in the parent component
+            } else {
+                console.error("Logout failed on the backend.");
+            }
+        } catch (error) {
+            console.error("Error during logout:", error);
+        }
+    };
+
+    return (
+        <main className="flex min-h-screen flex-col items-center justify-center bg-green-50 p-8">
+            <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl transition-all duration-300">
+                {confirmingLogout ? (
+                    // --- Logout Confirmation View ---
+                    <div>
+                        <h2 className="mb-4 text-xl font-bold text-gray-800">Sign Out</h2>
+                        <p className="mb-6 text-gray-600">Are you sure you want to sign out?</p>
+                        <div className="flex justify-center space-x-4">
+                            <button
+                                onClick={() => setConfirmingLogout(false)}
+                                className="rounded-md bg-gray-200 px-6 py-2 font-semibold text-black transition hover:bg-gray-300"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleLogoutConfirm}
+                                className="rounded-md bg-red-600 px-6 py-2 font-semibold text-white transition hover:bg-red-700"
+                            >
+                                Sign Out
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    // --- Default Dashboard View ---
+                    <div>
+                        <h1 className="mb-4 text-3xl font-bold text-gray-800">Welcome to Housify!</h1>
+                        <p className="mb-6 text-lg text-gray-600">
+                            You are logged in as <span className="font-semibold text-green-600">{user.username}</span>.
+                        </p>
+                        <div className="mt-8 space-y-4">
+                            <button className="w-full rounded-md bg-black px-6 py-3 text-lg font-semibold text-white transition-transform duration-200 hover:scale-105">
+                                Create a House
+                            </button>
+                            <button className="w-full rounded-md bg-gray-200 px-6 py-3 text-lg font-semibold text-black transition-transform duration-200 hover:scale-105">
+                                Join a House
+                            </button>
+                        </div>
+                        <button
+                            onClick={() => setConfirmingLogout(true)}
+                            className="mt-8 inline-block text-sm font-medium text-gray-500 hover:text-black"
+                        >
+                            Logout
+                        </button>
+                    </div>
+                )}
+            </div>
+        </main>
+    );
+};
+
+
+// --- Main Page Component ---
+export default function Home() {
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const response = await fetch('http://localhost:8000/api/user/', {
+                    credentials: 'include',
+                });
+                if (response.ok) {
+                    setUser(await response.json());
+                } else {
+                    setUser(null);
+                }
+            } catch (error) {
+                console.error("Failed to fetch user:", error);
+                setUser(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUser();
+    }, []);
+
+    if (loading) {
+        return (
+            <main className="flex min-h-screen flex-col items-center justify-center bg-green-50">
+                <p className="text-2xl font-semibold text-gray-700">Loading...</p>
+            </main>
+        );
+    }
+
+    if (user) {
+        return <Dashboard user={user} onLogout={() => setUser(null)} />;
+    }
+
+    return (
+        <main className="flex min-h-screen flex-col items-center justify-center bg-green-50 p-4">
+            <div className="w-full max-w-sm rounded-lg bg-white p-8 text-center shadow-2xl">
+                <img
+                    src="/logo.png"
+                    alt="Housify Logo"
+                    width={200}
+                    height={200}
+                    className="mx-auto"
+                />
+                <h1 className="-mt-4 mb-2 text-3xl font-bold text-gray-900">
+                    Welcome to <span className="text-green-600">Housify</span>
+                </h1>
+                <p className="mb-8 text-gray-600">Your shared home, simplified.</p>
+
+                <a
+                    href="http://localhost:8000/accounts/google/login/"
+                    className="group inline-flex w-full items-center justify-center rounded-md bg-black px-4 py-3 text-lg font-semibold text-white transition-transform duration-200 hover:scale-105"
+                >
+                    <svg className="mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                        <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path>
+                        <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path>
+                        <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.223 0-9.657-3.657-11.127-8.481l-6.571 4.819C9.656 39.663 16.318 44 24 44z"></path>
+                        <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C42.012 36.49 44 30.856 44 24c0-1.341-.138-2.65-.389-3.917z"></path>
+                    </svg>
+                    Sign In with Google
+                </a>
+            </div>
+        </main>
+    );
+}
+
