@@ -3,13 +3,15 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { getCookie } from '../utils'; // Import from utils
+import { getCookie } from '../utils';
+import { useRouter } from 'next/navigation'; // NEW: Import the router
 
 const CreateHouse = ({ showDashboardView }: { showDashboardView: () => void; }) => {
     const [houseName, setHouseName] = useState('');
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [isSuggesting, setIsSuggesting] = useState(false);
     const [suggestionError, setSuggestionError] = useState(false);
+    const router = useRouter(); // NEW: Initialize the router
 
     useEffect(() => {
         if (houseName.length < 3) {
@@ -45,9 +47,38 @@ const CreateHouse = ({ showDashboardView }: { showDashboardView: () => void; }) 
         setSuggestions([]);
     };
 
+    // --- UPDATED: This function now has the API call logic ---
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        alert(`Creating house with name: ${houseName}`);
+        console.log(`Submitting to create house with name: ${houseName}`);
+
+        try {
+            const response = await fetch('http://localhost:8000/api/houses/create/', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken') || '',
+                },
+                body: JSON.stringify({ name: houseName }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log("House created successfully:", data);
+                // NEW: Redirect to the main app page on success
+                // router.push('/home');
+                router.push('/home?new=true');
+            } else {
+                // You can add more specific error handling here later
+                console.error("Failed to create house:", data);
+                alert(`Error: ${data.name || 'Could not create house.'}`);
+            }
+        } catch (error) {
+            console.error("An error occurred during house creation:", error);
+            alert("An unexpected error occurred. Please try again.");
+        }
     };
 
     return (

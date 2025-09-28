@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
-import {getCookie} from "../utils.js";
+import { getCookie } from '../utils';
+import { useRouter } from 'next/navigation'; // NEW: Import the router
 
 const JoinHouse = ({ showDashboardView }: { showDashboardView: () => void; }) => {
     const [otp, setOtp] = useState<string[]>(new Array(6).fill(''));
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+    const router = useRouter(); // NEW: Initialize the router
 
     const handleChange = (element: HTMLInputElement, index: number) => {
         if (isNaN(Number(element.value))) return;
@@ -23,19 +25,51 @@ const JoinHouse = ({ showDashboardView }: { showDashboardView: () => void; }) =>
         }
     };
 
+    // --- UPDATED: This function now has the API call logic ---
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         const fullOtp = otp.join('');
+
         if (fullOtp.length !== 6) {
             alert('Please enter a complete 6-digit code.');
             return;
         }
-        // ... API call logic will go here
+
+        console.log("Attempting to join house with code:", fullOtp);
+
+        try {
+            const response = await fetch('http://localhost:8000/api/houses/use-invite/', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken') || '',
+                },
+                body: JSON.stringify({ code: fullOtp }),
+            });
+
+            const data = await response.json();
+            console.log("Backend response:", data);
+
+            if (response.ok) {
+                // alert(`Successfully joined house: ${data.name}!`);
+                // NEW: Redirect to the main app page on success
+                // router.push('/home');
+                router.push('/home?new=true');
+            } else {
+                alert(`Error: ${data.error || 'Failed to join house'}`);
+            }
+        } catch (error) {
+            console.error("Error joining house:", error);
+            alert("An error occurred. Please check the console.");
+        }
     };
 
     return (
         <div className="w-full max-w-md rounded-2xl bg-black p-8 text-center shadow-xl text-white">
-            <div className="flex justify-center mb-6"><img src="/lock_icon.png" alt="Lock Icon" className="w-16 h-16" /></div>
+            <div className="flex justify-center mb-6">
+                <img src="/lock_icon.png" alt="Lock Icon" className="w-16 h-16" />
+            </div>
             <h1 className="mb-2 text-3xl font-bold">Enter your Verification Code</h1>
             <p className="mb-8 text-gray-400">Ask your House admin for the code!</p>
             <form onSubmit={handleSubmit} className="space-y-8">
