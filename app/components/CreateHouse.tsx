@@ -6,7 +6,13 @@ import React, { useState, useEffect } from 'react';
 import { getCookie } from '../utils';
 import { useRouter } from 'next/navigation'; // NEW: Import the router
 
-const CreateHouse = ({ showDashboardView }: { showDashboardView: () => void; }) => {
+interface CreateHouseProps {
+    showDashboardView: () => void;
+    onSuccess: (newHouseData: any) => void;
+}
+
+
+const CreateHouse = ({ showDashboardView ,onSuccess}: CreateHouseProps) => {
     const [houseName, setHouseName] = useState('');
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [isSuggesting, setIsSuggesting] = useState(false);

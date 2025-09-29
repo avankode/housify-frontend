@@ -4,7 +4,12 @@ import React, { useState, useRef } from 'react';
 import { getCookie } from '../utils';
 import { useRouter } from 'next/navigation'; // NEW: Import the router
 
-const JoinHouse = ({ showDashboardView }: { showDashboardView: () => void; }) => {
+interface JoinHouseProps {
+    showDashboardView: () => void;
+    onSuccess: (newHouseData: any) => void;
+}
+
+const JoinHouse = ({ showDashboardView }: JoinHouseProps) => {
     const [otp, setOtp] = useState<string[]>(new Array(6).fill(''));
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
     const router = useRouter(); // NEW: Initialize the router

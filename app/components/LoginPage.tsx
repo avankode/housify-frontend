@@ -6,6 +6,7 @@ import React from 'react';
 
 const LoginPage = () => {
     return (
+        <main className="flex min-h-screen flex-col items-center justify-center bg-green-50 p-4">
         <div className="w-full max-w-sm rounded-lg bg-white p-8 text-center shadow-2xl">
             <img
                 src="/logo.png"
@@ -32,6 +33,7 @@ const LoginPage = () => {
                 Sign In with Google
             </a>
         </div>
+        </main>
     );
 };
 
