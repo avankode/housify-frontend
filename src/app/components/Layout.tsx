@@ -13,8 +13,7 @@ const Layout = ({ children, houseName, onLogout }: {
                 <nav className="container mx-auto px-6 py-3">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                            <img src="/logo.png" alt="Housify Logo" className="h-12 w-12 mr-3" />
-                            <span className="text-2xl font-bold text-gray-800">Housify</span>
+                            <img src="/logo.png" alt="Housify Logo" className="h-25 w-45 mr-3" />
                         </div>
                         <div className="flex items-center">
                             <div className="text-2xl font-semibold text-gray-700 mr-6">
