@@ -38,7 +38,7 @@ const Dashboard = ({ user, showCreateHouseView, showJoinHouseView, onLogout }: {
                     <p className="mb-6 text-gray-600">Are you sure you want to sign out?</p>
                     <div className="flex justify-center space-x-4">
                         <button onClick={() => setConfirmingLogout(false)} className="w-full rounded-md bg-gray-200 px-6 py-2 font-semibold">Cancel</button>
-                        <button onClick={handleLogoutConfirm} className="w-full rounded-md bg-red-600 px-6 py-2 font-semibold text-white">Sign Out</button>
+                        <button onClick={handleLogoutConfirm} className="w-full rounded-md bg-gray-300 px-6 py-2 font-semibold text-white">Sign Out</button>
                     </div>
                 </div>
             ) : (
