@@ -11,13 +11,19 @@ export interface House {
     };
     members: string[];
 }
-
+export interface Profile {
+    display_name: string;
+    phone_number: string;
+    profile_photo: string; // This will now be a full URL
+}
 export interface UserWithHouse {
     username: string;
     email: string;
-    house: House | null; // The user's house can be null
+    house: House | null;
+    profile: Profile;
+    display_name: string;
+    profile_photo_url: string;
 }
-
 
 
 
