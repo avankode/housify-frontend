@@ -6,8 +6,23 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Layout from '../components/Layout';
 import {getCookie} from "@/src/app/utils";
+import Link from 'next/link';
 
-
+const DashboardTile = ({ title, color, href, children }: {
+    title: string;
+    color: string;
+    href: string;
+    children: React.ReactNode;
+}) => (
+    <Link href={href} className="flex-1">
+        <div className="flex flex-col items-center justify-center h-full bg-white rounded-2xl shadow-lg p-8 transform transition-transform duration-300 hover:scale-105 hover:-translate-y-2 cursor-pointer">
+            <div className={`w-32 h-32 ${color}`}>
+                {children}
+            </div>
+            <h2 className="mt-4 text-2xl font-bold text-gray-800">{title}</h2>
+        </div>
+    </Link>
+);
 // Interface definitions remain the same
 interface House {
     id: number;
@@ -114,13 +129,34 @@ export default function HomePage() {
                     </h1>
                 </div>
             )}
-            <div className="text-center">
-                <h1 className="text-4xl font-bold text-gray-800">
-                    Main Dashboard
-                </h1>
-                <p className="mt-4 text-lg text-gray-600">
-                    This is where we will build the tabs for Queues, Laundry, and Expenses.
-                </p>
+            <div className="flex flex-col md:flex-row md:space-x-8 space-y-8 md:space-y-0 h-[calc(100vh-200px)]">
+
+                {/* Tile 1: Laundry */}
+                <DashboardTile title="Laundry" color="text-blue-800" href="/laundry-main-page">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12A2.25 2.25 0 0020.25 14.25V3M3.75 3H20.25M3.75 3h16.5M3.75 8.25h16.5M3.75 12h16.5m-16.5 4.5h16.5M3.75 3a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 003.75 21h16.5a2.25 2.25 0 002.25-2.25V5.25A2.25 2.25 0 0020.25 3" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5a4.5 4.5 0 110-9 4.5 4.5 0 010 9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 12a.75.75 0 000-1.5H12a.75.75 0 000 1.5h2.25z" />
+                    </svg>
+                </DashboardTile>
+
+                {/* Tile 2: Queues */}
+                <DashboardTile title="Queues" color="text-purple-800" href="/queues-main-page">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-.668-.287-1.265-.77-1.684l-4.5-4.5a2.25 2.25 0 00-1.683-.77H6.108c-.668 0-1.265.287-1.684.77l-4.5 4.5A2.25 2.25 0 00.75 6.108v11.142c0 .668.287 1.265.77 1.684l4.5 4.5a2.25 2.25 0 001.683.77h3.75" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 3.75V9h5.25V3.75" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 12h.008v.008H5.25V12zm0 3h.008v.008H5.25v-3zm0 3h.008v.008H5.25v-3z" />
+                    </svg>
+                </DashboardTile>
+
+                {/* Tile 3: Expenses */}
+                <DashboardTile title="Expenses" color="text-yellow-500" href="/expenses-main-page">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-1.571 4.006-.713l.879.659" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 110-18 9 9 0 010 18z" />
+                    </svg>
+                </DashboardTile>
+
             </div>
         </Layout>
     );
