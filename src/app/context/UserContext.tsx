@@ -25,6 +25,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             const response = await fetch('http://localhost:8000/api/user/', { credentials: 'include' });
             if (response.status === 401) { // Unauthorized
+                console.log("YOU GOT ADMINIFIED")
                 setUser(null);
                 return;
             }
@@ -34,6 +35,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
             const data = await response.json();
 
             // Your smart logic: Check if a logged-in user was removed from a house
+            console.log("this is your house mate ",user?.house)
+            console.log("who is ts diva ? : ",user)
+            console.log("well the data says that " , data.house) 
             if (user && user.house && !data.house) {
                 router.push('/user-house-deleted');
             } else {

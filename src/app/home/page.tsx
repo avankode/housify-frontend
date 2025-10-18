@@ -132,7 +132,7 @@ export default function HomePage() {
             <div className="flex flex-col md:flex-row md:space-x-8 space-y-8 md:space-y-0 h-[calc(100vh-200px)]">
 
                 {/* Tile 1: Laundry */}
-                <DashboardTile title="Laundry" color="text-blue-800" href="/laundry-main-page">
+                <DashboardTile title="Laundrify" color="text-blue-800" href="/laundry">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12A2.25 2.25 0 0020.25 14.25V3M3.75 3H20.25M3.75 3h16.5M3.75 8.25h16.5M3.75 12h16.5m-16.5 4.5h16.5M3.75 3a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 003.75 21h16.5a2.25 2.25 0 002.25-2.25V5.25A2.25 2.25 0 0020.25 3" />
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5a4.5 4.5 0 110-9 4.5 4.5 0 010 9z" />
@@ -141,7 +141,7 @@ export default function HomePage() {
                 </DashboardTile>
 
                 {/* Tile 2: Queues */}
-                <DashboardTile title="Queues" color="text-purple-800" href="/queues-main-page">
+                <DashboardTile title="Queify" color="text-purple-800" href="/queues">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-.668-.287-1.265-.77-1.684l-4.5-4.5a2.25 2.25 0 00-1.683-.77H6.108c-.668 0-1.265.287-1.684.77l-4.5 4.5A2.25 2.25 0 00.75 6.108v11.142c0 .668.287 1.265.77 1.684l4.5 4.5a2.25 2.25 0 001.683.77h3.75" />
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 3.75V9h5.25V3.75" />
@@ -150,7 +150,7 @@ export default function HomePage() {
                 </DashboardTile>
 
                 {/* Tile 3: Expenses */}
-                <DashboardTile title="Expenses" color="text-yellow-500" href="/expenses-main-page">
+                <DashboardTile title="Expensify" color="text-yellow-500" href="/expenses">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-1.571 4.006-.713l.879.659" />
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 110-18 9 9 0 010 18z" />

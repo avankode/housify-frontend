@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 
 export default function UserHouseDeletedPage() {
+    console.log("HOW DID THIS HAPPEN TO ME");
     return (
         <main className="flex min-h-screen flex-col items-center justify-center bg-green-50 p-8 text-center">
             <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
