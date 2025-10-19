@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Layout from '../components/Layout';
 import AddItemModal from './components/AddItemModal';
 import InventoryCarousel from "./components/InventoryCarousel";
+import QueueSection from './components/QueueSection';
 interface InventoryItem {
     id: number;
     name: string;
@@ -21,7 +22,7 @@ interface QueueItem {
     provider: string;
     added_at: string;
 }
-
+const GCHAT_WEBHOOK_URL = 'https://chat.googleapis.com/v1/spaces/AAQAWmRZiB0/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=h0XZcVNAJl3PbWEyIrgWOBO9no9Q0AH8Sa38AALFEQE';
 export default function QueuesPage(){
     const { user, isLoading: isUserLoading } = useUser()
     const router = useRouter();
@@ -85,6 +86,11 @@ export default function QueuesPage(){
         setIsModalOpen(false);
         setSelectedItem(null);
     };
+    const handleDeleteItem = (id: number) => {
+        console.log("Deleting item (this will be a WebSocket message):", id);
+        // --- TODO: This will be replaced by a WebSocket send ---
+        setQueue(prevQueue => prevQueue.filter(item => item.id !== id));
+    };
 
     const handleAddItemToQueue = (item: InventoryItem, quantity: number, provider: string) => {
         console.log("Adding item (this will be a WebSocket message):", item.name, quantity, provider);
@@ -143,12 +149,11 @@ export default function QueuesPage(){
                     />
                 </div>
                 {/* Placeholder for Queue List */}
-                <div className="p-4 bg-white rounded-lg shadow">
-                    <h2 className="text-xl font-semibold mb-2">Current Queue (List will go here)</h2>
-                    <pre className="bg-gray-100 p-2 rounded overflow-auto">
-                        {JSON.stringify(queue, null, 2)}
-                    </pre>
-                </div>
+                <QueueSection
+                    queue={queue}
+                    onDeleteItem={handleDeleteItem}
+                    googleChatWebhook={GCHAT_WEBHOOK_URL}
+                />
 
                 <AddItemModal
                     item={selectedItem}
