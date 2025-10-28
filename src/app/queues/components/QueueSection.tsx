@@ -2,49 +2,32 @@
 
 import React, { useState, useEffect } from 'react';
 import QueueItemTile from './QueueItemTile';
-
+import { InventoryItem, QueueItem } from "./../../types"
 // --- Type Definitions ---
-interface InventoryItem {
-    id: number;
-    name: string;
-    price: string;
-    image_url: string;
-}
-interface QueueItem {
-    id: number;
-    inventory_item: InventoryItem;
-    added_by: string;
-    quantity: number;
-    provider: string;
-    added_at: string;
-}
+
+
 // --- End Type Definitions ---
-interface SimpleQueueItem {
-    houseId: string;
-    itemId: string; // This is the unique ID of the *queue entry*
-    inventoryItemId: number; // This is the ID of the *product*
-    quantity: number;
-    provider: string;
-    addedBy: string;
-}
+
 interface Props {
     queue: QueueItem[];
-    onDeleteItem: (id: number) => void;
-    googleChatWebhook: string; // We'll get this from the user (or .env)
+    onDeleteItem: (itemId: number) => void; // We use the string 'itemId'
+    googleChatWebhook: string;
+    onClearQueue: () => void; // Prop to clear the queue
 }
 
 // --- Helper Function ---
 // Calculates totals for each provider
 const calculateTotals = (queue: QueueItem[]) => {
-    const totals = {
-        Blinkit: 0,
-        Swiggy: 0,
-        Zepto: 0,
-        overall: 0,
-    };
+    const totals = { Blinkit: 0, Swiggy: 0, Zepto: 0, overall: 0 };
+
+    // Create a quick lookup map for prices
+    // const priceMap = new Map(inventory.map(item => [item.id, parseFloat(item.price)]));
 
     queue.forEach(item => {
-        const itemTotal = parseFloat(item.inventory_item.price) * item.quantity;
+        // Access nested price directly
+        const price = parseFloat(item.inventory_item.price);
+        const itemTotal = price * item.quantity;
+
         totals.overall += itemTotal;
         if (item.provider === 'Blinkit') totals.Blinkit += itemTotal;
         if (item.provider === 'Swiggy') totals.Swiggy += itemTotal;
@@ -55,29 +38,32 @@ const calculateTotals = (queue: QueueItem[]) => {
 };
 
 // --- Main Component ---
-export default function QueueSection({ queue, onDeleteItem, googleChatWebhook }: Props) {
+export default function QueueSection({ queue, onDeleteItem, googleChatWebhook, onClearQueue }: Props) {
     const [buttonState, setButtonState] = useState({ text: 'Queue Ready', color: 'bg-gray-400', disabled: true });
+    const [readyProviders, setReadyProviders] = useState<string[]>([]);
 
-    const totals = calculateTotals(queue);
-    const readyProviders: string[] = [];
-
-    if (totals.Blinkit > 150) readyProviders.push('Blinkit');
-    if (totals.Swiggy > 150) readyProviders.push('Swiggy');
-    if (totals.Zepto > 150) readyProviders.push('Zepto');
+    const totals = calculateTotals(queue); // Pass inventory to helper
 
     // --- Button Logic Effect ---
     useEffect(() => {
-        if (readyProviders.length === 0) {
+        const newReadyProviders: string[] = [];
+        if (totals.Blinkit > 150) newReadyProviders.push('Blinkit');
+        if (totals.Swiggy > 150) newReadyProviders.push('Swiggy');
+        if (totals.Zepto > 150) newReadyProviders.push('Zepto');
+
+        setReadyProviders(newReadyProviders); // Set the state for the GChat effect
+
+        if (newReadyProviders.length === 0) {
             setButtonState({ text: 'Queue Ready', color: 'bg-gray-400', disabled: true });
-        } else if (readyProviders.length === 1) {
-            const provider = readyProviders[0];
+        } else if (newReadyProviders.length === 1) {
+            const provider = newReadyProviders[0];
             if (provider === 'Blinkit') setButtonState({ text: 'BLINKIT IT!', color: 'bg-yellow-500 hover:bg-yellow-600', disabled: false });
             if (provider === 'Swiggy') setButtonState({ text: 'SWIGGY IT!', color: 'bg-orange-500 hover:bg-orange-600', disabled: false });
             if (provider === 'Zepto') setButtonState({ text: 'ZEPTO IT!', color: 'bg-purple-600 hover:bg-purple-700', disabled: false });
         } else {
             setButtonState({ text: 'READY', color: 'bg-black hover:bg-gray-800', disabled: false });
         }
-    }, [queue]); // Recalculate whenever the queue changes
+    }, [queue, totals.Blinkit, totals.Swiggy, totals.Zepto]); // Recalculate whenever the queue or inventory changes
 
     // --- Google Chat Notification Effect ---
     useEffect(() => {
@@ -87,9 +73,15 @@ export default function QueueSection({ queue, onDeleteItem, googleChatWebhook }:
 
         const timer = setTimeout(() => {
             console.log("Sending GChat notification...");
-            // We'll send a separate message for each ready provider
+
             readyProviders.forEach(provider => {
-                const itemsForProvider = queue.filter(item => item.provider === provider);
+                const itemsForProvider = queue
+                    .filter(item => item.provider === provider)
+                    .map(item => ({ // Access nested name directly
+                        name: item.inventory_item.name,
+                        quantity: item.quantity
+                    }));
+
                 const message = {
                     "cardsV2": [
                         {
@@ -105,7 +97,7 @@ export default function QueueSection({ queue, onDeleteItem, googleChatWebhook }:
                                     {
                                         "widgets": itemsForProvider.map(item => ({
                                             "textParagraph": {
-                                                "text": `<b>${item.inventory_item.name}</b> (x${item.quantity})`
+                                                "text": `<b>${item.name}</b> (x${item.quantity})`
                                             }
                                         }))
                                     }
@@ -122,10 +114,11 @@ export default function QueueSection({ queue, onDeleteItem, googleChatWebhook }:
                     body: JSON.stringify(message),
                 }).catch(err => console.error(`Failed to send GChat notification for ${provider}:`, err));
             });
-        }, 1* 10 * 1000); // 3 minutes
+        }, 3 * 60 * 1000); // 3 minutes
 
-        return () => clearTimeout(timer); // VERY IMPORTANT: Cancel the timer if the queue changes
-    }, [buttonState.disabled, googleChatWebhook, queue]); // Re-run if the button state or queue changes
+        // VERY IMPORTANT: Cancel the timer if the button state changes
+        return () => clearTimeout(timer);
+    }, [buttonState.disabled, googleChatWebhook, queue,  readyProviders]); // Re-run if these change
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -170,6 +163,7 @@ export default function QueueSection({ queue, onDeleteItem, googleChatWebhook }:
                     </div>
                 </div>
                 <button
+                    onClick={onClearQueue} // <-- The new onClick handler
                     disabled={buttonState.disabled}
                     className={`w-full p-4 rounded-lg text-white font-bold text-xl transition-all duration-300 ${
                         buttonState.color
