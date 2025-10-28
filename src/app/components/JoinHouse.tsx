@@ -101,7 +101,7 @@ const JoinHouse = ({ showDashboardView }: JoinHouseProps) => {
                             value={digit}
                             onChange={(e) => handleChange(e.target, index)}
                             onKeyDown={(e) => handleKeyDown(e, index)}
-                            ref={el => inputRefs.current[index] = el}
+                            ref={el => {inputRefs.current[index] = el}}
                             className="w-12 h-14 text-3xl text-center rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 caret-transparent"
                             inputMode="numeric"
                         />
