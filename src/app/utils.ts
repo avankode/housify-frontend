@@ -17,6 +17,7 @@ export interface Profile {
     profile_photo: string; // This will now be a full URL
 }
 export interface UserWithHouse {
+    id: number;
     username: string;
     email: string;
     house: House | null;
