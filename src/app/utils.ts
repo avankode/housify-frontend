@@ -9,7 +9,7 @@ export interface House {
         id: number;
         username: string;
     };
-    members: string[];
+    members: UserWithHouse[];
 }
 export interface Profile {
     display_name: string;
@@ -17,6 +17,7 @@ export interface Profile {
     profile_photo: string; // This will now be a full URL
 }
 export interface UserWithHouse {
+    id: number;
     username: string;
     email: string;
     house: House | null;

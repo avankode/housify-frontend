@@ -44,7 +44,7 @@ const Dashboard = ({ user, showCreateHouseView, showJoinHouseView, onLogout }: {
             ) : (
                 <div>
                     <h1 className="mb-4 text-3xl font-bold text-gray-800">Welcome, {user.username}!</h1>
-                    <p className="mb-8 text-gray-600">You're not part of a house yet.</p>
+                    <p className="mb-8 text-gray-600">You&apos;re not part of a house yet.</p>
                     <div className="space-y-4">
                         <button onClick={showCreateHouseView} className="w-full rounded-md bg-black px-6 py-3 font-semibold text-white">Create a House</button>
                         <button onClick={showJoinHouseView} className="w-full rounded-md bg-gray-200 px-6 py-3 font-semibold text-black">Join a House</button>

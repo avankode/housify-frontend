@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCookie } from '../utils';
-
+import Image from "next/image";
 
 // --- Child Component: CreateHouse ---
 // This is the component you provided, with a few modifications.
@@ -149,7 +149,7 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
     return (
         <div className="w-full max-w-md rounded-2xl bg-black p-8 text-center shadow-xl text-white">
             <div className="flex justify-center mb-6">
-                <img src="/lock_icon.png" alt="Lock Icon" className="w-16 h-16" />
+                <Image src="/lock_icon.png" alt="Lock Icon" className="w-16 h-16" />
             </div>
             <h1 className="mb-2 text-3xl font-bold">Enter your Verification Code</h1>
             <p className="mb-8 text-gray-400">Ask your House admin for the code!</p>
@@ -157,7 +157,7 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
                 <div className="flex justify-center space-x-2">
                     {otp.map((digit, index) => (
                         <input key={index} type="text" maxLength={1} value={digit} onChange={(e) => handleChange(e.target, index)} onKeyDown={(e) => handleKeyDown(e, index)}
-                               ref={el => inputRefs.current[index] = el}
+                               ref={el => {inputRefs.current[index] = el}}
                                className="w-12 h-14 text-3xl text-center rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 caret-transparent"
                                inputMode="numeric" />
                     ))}
@@ -187,9 +187,9 @@ export default function OnboardingHousePage() {
             default:
                 return (
                     <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl">
-                        <img src="/logo.png" alt="Housify Logo" width={160} height={220} className="mx-auto mb-1" />
+                        <Image src="/logo.png" alt="Housify Logo" width={160} height={220} className="mx-auto mb-1" />
                         <h1 className="mb-4 text-3xl font-bold text-gray-800">Welcome to Housify!</h1>
-                        <p className="mb-8 text-gray-600">You're not part of a house yet. Get started by creating or joining one.</p>
+                        <p className="mb-8 text-gray-600">You&apos;re not part of a house yet. Get started by creating or joining one.</p>
                         <div className="space-y-4">
                             <button onClick={() => setView('CREATE')} className="w-full rounded-md bg-black px-6 py-3 text-lg font-semibold text-white transition-transform duration-200 hover:scale-105">
                                 Create a House

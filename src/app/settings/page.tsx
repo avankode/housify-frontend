@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation';
 import { UserWithHouse } from '../utils';
 import Link from 'next/link';
 import {getCookie} from "@/src/app/utils";
+import Image from "next/image";
 
 // --- Reusable UI Components ---
 
-const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => void; children: React.ReactNode }) => {
+const Modal = ({ isOpen,onClose, children }: { isOpen: boolean; onClose?: () => void; children: React.ReactNode }) => {
     if (!isOpen) return null;
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
@@ -44,7 +45,7 @@ export default function SettingsPage() {
     const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
     const [showGoodbye, setShowGoodbye] = useState(false);
     const [goodbyeStep, setGoodbyeStep] = useState(1);
-
+    const [,setError] = useState<string | null>(null);
     const [showNewAdminAnim, setShowNewAdminAnim] = useState(false);
     const [newAdminName, setNewAdminName] = useState('');
     const [newAdminAnimStep, setNewAdminAnimStep] = useState(1);
@@ -56,8 +57,12 @@ export default function SettingsPage() {
                 if (!response.ok) throw new Error('Failed to fetch user data.');
                 const data = await response.json();
                 setUser(data);
-            } catch (err) {
-                router.push('/error-session');
+            } catch (err : unknown) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError('An unexpected error occurred.');
+                }                
             } finally {
                 setLoading(false);
             }
@@ -129,9 +134,12 @@ export default function SettingsPage() {
             setTimeout(() => setGoodbyeStep(2), 1500);
             setTimeout(() => router.push('/onboarding-house'), 3500);
 
-        } catch (error) {
-            console.error(error);
-            alert('Could not leave the house.');
+        } catch (err : unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('An unexpected error occurred.');
+            }
         }
     };
 
@@ -148,9 +156,13 @@ export default function SettingsPage() {
             });
             if (!response.ok) throw new Error('Failed to delete house.');
             router.push('/onboarding-house');
-        } catch (error) {
-            console.error(error);
-            alert('Could not delete the house.');
+        } catch (err : unknown) {
+            if (err instanceof Error) {
+            setError(err.message);
+            } else {
+                setError('An unexpected error occurred.');
+            }
+
         }
     };
 
@@ -167,15 +179,18 @@ export default function SettingsPage() {
                 body: JSON.stringify({ new_admin_id: selectedMemberId }),
             });
             const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'Failed to transfer adminship.');
+            if (!response.ok) throw new Error(data.err || 'Failed to transfer adminship.');
 
             const name = data.message.split(' ').pop().replace('.', '');
             setNewAdminName(name);
             setShowNewAdminAnim(true); // Trigger the animation
 
-        } catch (error: any) {
-            console.error(error);
-            alert(error.message);
+        } catch (err: unknown) {
+                if (err instanceof Error) {
+                setError(err.message);
+                } else {
+                    setError('An unexpected error occurred.');
+                }
         }
     };
 
@@ -283,7 +298,7 @@ export default function SettingsPage() {
                             onClick={() => setSelectedMemberId(member.id)}
                             className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${selectedMemberId === member.id ? 'bg-green-100 border-green-400 border' : 'hover:bg-gray-100'}`}
                         >
-                            <img src={member.profile_photo_url} alt={member.display_name} className="w-10 h-10 rounded-full mr-4" />
+                            <Image src={member.profile_photo_url} alt={member.display_name} className="w-10 h-10 rounded-full mr-4" />
                             <span className="font-semibold">{member.display_name}</span>
                         </div>
                     ))}

@@ -2,7 +2,7 @@
 
 import React , { useState } from 'react';
 import Link from 'next/link';
-
+import Image from 'next/image'
 const Layout = ({ children, houseName, onLogout }: {
     children: React.ReactNode;
     houseName: string;
@@ -18,7 +18,7 @@ const Layout = ({ children, houseName, onLogout }: {
                         {/* 1. Left Column: Logo */}
                         <div className="justify-self-start">
                             <Link href="/home">
-                                <img
+                                <Image
                                     src="/logo.png"
                                     alt="Housify Logo"
                                     className="h-16 w-15 cursor-pointer"

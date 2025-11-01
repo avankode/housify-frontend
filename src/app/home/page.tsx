@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Layout from '../components/Layout';
 import {getCookie} from "@/src/app/utils";
@@ -34,7 +34,7 @@ interface UserWithHouse {
     house: House | null;
 }
 
-export default function HomePage() {
+function HomeContent() {
     const [userData, setUserData] = useState<UserWithHouse | null>(null);
     const [loading, setLoading] = useState(true);
     const [showAnimation, setShowAnimation] = useState(false);
@@ -117,7 +117,6 @@ export default function HomePage() {
     }
 
     return (
-        // UPDATED: Pass the handleLogout function as a prop
         <Layout houseName={userData.house.name} onLogout={handleLogout}>
             {showAnimation && (
                 <div className="fixed inset-0 z-20 flex items-center justify-center bg-gray-100 bg-opacity-100">
@@ -159,5 +158,13 @@ export default function HomePage() {
 
             </div>
         </Layout>
+    );
+}
+
+export default function HomePage() {
+    return (
+        <Suspense fallback={<p>Loading...</p>}>
+            <HomeContent />
+        </Suspense>
     );
 }

@@ -21,7 +21,7 @@ export default function QueuesPage(){
     const [isDataLoading, setIsDataLoading] = useState(true);
 
     // const [ws, setWs] = useState<WebSocket | null>(null);
-    const [presenceCount, setPresenceCount] = useState(0);
+    // const [presenceCount, setPresenceCount] = useState(0);
 
     const [searchTerm, setSearchTerm] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);

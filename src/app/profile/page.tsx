@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { UserWithHouse } from '../utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // Import the router hook
+import Image from "next/image";
 
 export default function ProfilePage() {
     const [user, setUser] = useState<UserWithHouse | null>(null);
@@ -22,8 +23,12 @@ export default function ProfilePage() {
                 }
                 const data = await response.json();
                 setUser(data);
-            } catch (err: any) {
-                setError(err.message);
+            } catch (err: unknown) {
+                    if (err instanceof Error) {
+                    setError(err.message);
+                    } else {
+                    setError('An unexpected error occurred.');
+                    }
             } finally {
                 setLoading(false);
             }
@@ -54,7 +59,7 @@ export default function ProfilePage() {
             <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
                 <div className="p-8">
                     <div className="text-center">
-                        <img
+                        <Image
                             src={`http://localhost:8000${user.profile.profile_photo}`}
                             alt="Profile"
                             className="w-32 h-32 rounded-full mx-auto border-4 border-green-200"

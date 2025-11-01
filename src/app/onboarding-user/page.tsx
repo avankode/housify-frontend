@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-// Import the specific component for separated inputs and the stylesheet
+import Image from "next/image";
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
 
@@ -59,9 +59,9 @@ export default function OnboardingUserPage() {
     return (
         <main className="flex min-h-screen flex-col items-center justify-center bg-green-50 p-8">
             <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl">
-                <img src="/logo.png" alt="Housify Logo" width={160} height={220} className="mx-auto mb-1" />
+                <Image src="/logo.png" alt="Housify Logo" width={160} height={220} className="mx-auto mb-1" />
                 <h1 className="mb-2 text-3xl font-bold text-gray-800">Welcome to Housify!</h1>
-                <p className="mb-8 text-gray-600">Let's get your profile set up.</p>
+                <p className="mb-8 text-gray-600">Let&apos;s get your profile set up.</p>
 
                 <form onSubmit={handleSubmit} className="space-y-6 text-left">
                     <div>

@@ -8,11 +8,11 @@ import { useRouter } from 'next/navigation'; // NEW: Import the router
 
 interface CreateHouseProps {
     showDashboardView: () => void;
-    onSuccess: (newHouseData: any) => void;
+    // onSuccess: (newHouseData: any) => void;
 }
 
 
-const CreateHouse = ({ showDashboardView ,onSuccess}: CreateHouseProps) => {
+const CreateHouse = ({ showDashboardView }: CreateHouseProps) => {
     const [houseName, setHouseName] = useState('');
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [isSuggesting, setIsSuggesting] = useState(false);
@@ -54,7 +54,7 @@ const CreateHouse = ({ showDashboardView ,onSuccess}: CreateHouseProps) => {
     };
 
     // --- UPDATED: This function now has the API call logic ---
-    const handleSubmit = async (event: React.FormEvent) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         console.log(`Submitting to create house with name: ${houseName}`);
 

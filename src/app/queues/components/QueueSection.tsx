@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import QueueItemTile from './QueueItemTile';
-import { InventoryItem, QueueItem } from "./../../types"
+import { QueueItem } from "./../../types"
 // --- Type Definitions ---
 
 

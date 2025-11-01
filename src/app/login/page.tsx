@@ -3,12 +3,12 @@
 "use client";
 
 import React from 'react';
-
+import Image from "next/image";
 const LoginPage = () => {
     return (
         <main className="flex min-h-screen flex-col items-center justify-center bg-green-50 p-4">
             <div className="w-full max-w-sm rounded-lg bg-white p-8 text-center shadow-2xl">
-                <img
+                <Image
                     src="/logo.png"
                     alt="Housify Logo"
                     width={200}

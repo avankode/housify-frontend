@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
-// import { getCookie } from '../utils';
+import Image from "next/image";
 import { useRouter } from 'next/navigation'; // NEW: Import the router
 
 const getCookie = (name: string) => {
@@ -20,7 +20,7 @@ const getCookie = (name: string) => {
 };
 interface JoinHouseProps {
     showDashboardView: () => void;
-    onSuccess: (newHouseData: any) => void;
+    // onSuccess: (newHouseData: House) => void;
 }
 
 const JoinHouse = ({ showDashboardView }: JoinHouseProps) => {
@@ -71,9 +71,6 @@ const JoinHouse = ({ showDashboardView }: JoinHouseProps) => {
             console.log("Backend response:", data);
 
             if (response.ok) {
-                // alert(`Successfully joined house: ${data.name}!`);
-                // NEW: Redirect to the main app page on success
-                // router.push('/home');
                 router.push('/home?new=true');
             } else {
                 alert(`Error: ${data.error || 'Failed to join house'}`);
@@ -87,7 +84,7 @@ const JoinHouse = ({ showDashboardView }: JoinHouseProps) => {
     return (
         <div className="w-full max-w-md rounded-2xl bg-black p-8 text-center shadow-xl text-white">
             <div className="flex justify-center mb-6">
-                <img src="/lock_icon.png" alt="Lock Icon" className="w-16 h-16" />
+                <Image src="/lock_icon.png" alt="Lock Icon" className="w-16 h-16" />
             </div>
             <h1 className="mb-2 text-3xl font-bold">Enter your Verification Code</h1>
             <p className="mb-8 text-gray-400">Ask your House admin for the code!</p>
@@ -101,7 +98,7 @@ const JoinHouse = ({ showDashboardView }: JoinHouseProps) => {
                             value={digit}
                             onChange={(e) => handleChange(e.target, index)}
                             onKeyDown={(e) => handleKeyDown(e, index)}
-                            ref={el => inputRefs.current[index] = el}
+                            ref={(el) => { inputRefs.current[index] = el }}
                             className="w-12 h-14 text-3xl text-center rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 caret-transparent"
                             inputMode="numeric"
                         />
