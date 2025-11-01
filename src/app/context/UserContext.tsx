@@ -1,88 +1,101 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { UserWithHouse } from '../utils';
-import { getCookie} from "../utils";
 
-// Define the shape of our context data
 interface UserContextType {
     user: UserWithHouse | null;
     isLoading: boolean;
     logout: () => void;
 }
 
-// Create the context with a default value of undefined
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-// Create the Provider component
+const PUBLIC_PATHS = ['/', '/login']; 
+const ONBOARDING_PATHS = ['/onboarding-user', '/onboarding-house'];
+
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<UserWithHouse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
+    const pathname = usePathname();
 
-    const fetchUser = useCallback(async () => {
+    const fetchUserAndRedirect = useCallback(async () => {
+        setIsLoading(true); // Start loading
+        const isPublic = PUBLIC_PATHS.includes(pathname);
+        const isOnboarding = ONBOARDING_PATHS.includes(pathname);
+
+        // 1. If we are on a PUBLIC page, we don't need to fetch a user.
+        if (isPublic) {
+            setUser(null);
+            setIsLoading(false);
+            return; // Stop here. This prevents the loop.
+        }
+
+        // 2. We are on a PRIVATE or ONBOARDING page. We MUST fetch the user.
+        let currentUser: UserWithHouse | null = null;
         try {
-            const response = await fetch('http://localhost:8000/api/user/', { credentials: 'include' });
-            if (response.status === 401) { // Unauthorized
-                console.log("YOU GOT ADMINIFIED")
-                setUser(null);
-                return;
-            }
-            if (!response.ok) {
-                throw new Error("Failed to fetch user");
-            }
-            const data = await response.json();
-
-            // Your smart logic: Check if a logged-in user was removed from a house
-            console.log("this is your house mate ",user?.house)
-            console.log("who is ts diva ? : ",user)
-            console.log("well the data says that " , data.house) 
-            if (user && user.house && !data.house) {
-                router.push('/user-house-deleted');
+            const response = await fetch('http://localhost:8000/api/user', {
+                method: 'GET',
+                credentials: 'include', 
+            });
+            
+            if (response.ok) {
+                currentUser = await response.json();
+                setUser(currentUser);
             } else {
-                setUser(data);
+                setUser(null);
             }
         } catch (error) {
             console.error("Fetch user error:", error);
-            setUser(null); // Set user to null on any fetch error
-        } finally {
-            setIsLoading(false);
+            setUser(null);
         }
-    }, [router, user]); // Include user in dependencies to compare old vs new state
 
-    // Fetch user on initial load
-    useEffect(() => {
-        fetchUser();
-    }, []); // Run only once on mount
+        // 3. --- REDIRECT LOGIC (runs after fetch) ---
+        // (This part will now work because the backend is fixed)
+        
 
-    // Add the "re-fetch on focus" event listener
+
+        if (currentUser?.profile && !currentUser?.display_name) {
+            if (pathname !== '/onboarding-user') {
+                router.push('/onboarding-user');
+            }
+            return;
+        }
+
+        if (!currentUser?.house) {
+            if (pathname !== '/onboarding-house') {
+                router.push('/onboarding-house');
+            }
+            return;
+        }
+
+        if (isOnboarding) {
+            router.push('/home');
+        }
+        
+        setIsLoading(false); // Stop loading
+
+    }, [pathname, router]);
+
+    // This re-runs on every path change
     useEffect(() => {
-        window.addEventListener('focus', fetchUser);
-        const intervalId = setInterval(fetchUser, 60000);
-        return () => {
-            window.removeEventListener('focus', fetchUser);
-            clearInterval(intervalId);
-        };
-    }, [fetchUser]);
+        fetchUserAndRedirect();
+    }, [fetchUserAndRedirect]);
+
 
     const logout = async () => {
+        // ... (logout logic is correct)
         try {
-            // Tell the backend to destroy the user's session
-            await fetch('http://localhost:8000/api/logout/', {
+            await fetch('http://localhost:8000/api/auth/logout', {
                 method: 'POST',
-                credentials: 'include', // Important to send the session cookie
-                headers: {
-                    // Django's security requires a CSRF token for POST requests
-                    'X-CSRFToken': getCookie('csrftoken') || '',
-                },
+                credentials: 'include',
             });
         } catch (error) {
             console.error("Error during backend logout:", error);
         } finally {
-            // This ensures the frontend logs out even if the backend call fails
             setUser(null);
-            // Redirect to the login page to complete the logout flow
             router.push('/');
         }
     };
@@ -96,7 +109,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     );
 };
 
-// Create a custom hook to easily access the context
 export const useUser = () => {
     const context = useContext(UserContext);
     if (context === undefined) {

@@ -41,4 +41,12 @@ export const getCookie = (name: string) => {
         }
     }
     return cookieValue;
-}
+};
+
+export const getAuthHeader = ()=> {
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+        return { 'Authorization': `Bearer ${token}` };
+    }
+    return {};
+};

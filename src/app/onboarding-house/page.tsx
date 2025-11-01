@@ -2,72 +2,78 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { getCookie } from '../utils';
+import { getAuthHeader, getCookie } from '../utils';
 
 
 // --- Child Component: CreateHouse ---
 // This is the component you provided, with a few modifications.
 const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
     const [houseName, setHouseName] = useState('');
+    const [isCreating, setIsCreating] = useState(false)
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [isSuggesting, setIsSuggesting] = useState(false);
     const [suggestionError, setSuggestionError] = useState(false);
     const router = useRouter();
 
-    useEffect(() => {
-        // ... (The AI suggestion logic remains unchanged)
-        if (houseName.length < 3) {
-            setSuggestions([]);
-            return;
-        }
-        setIsSuggesting(true);
-        setSuggestionError(false);
-        const handler = setTimeout(() => {
-            fetch('http://localhost:8000/api/houses/suggest-name/', {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
-                body: JSON.stringify({ name: houseName }),
-            })
-                .then(res => {
-                    if (!res.ok) throw new Error('Backend responded with an error');
-                    return res.json();
-                })
-                .then(data => setSuggestions(data.suggestions || []))
-                .catch(error => {
-                    console.error("Error fetching suggestions:", error);
-                    setSuggestions([]);
-                    setSuggestionError(true);
-                })
-                .finally(() => setIsSuggesting(false));
-        }, 700);
-        return () => clearTimeout(handler);
-    }, [houseName]);
+    // useEffect(() => {
+    //     // ... (The AI suggestion logic remains unchanged)
+    //     if (houseName.length < 3) {
+    //         setSuggestions([]);
+    //         return;
+    //     }
+    //     setIsSuggesting(true);
+    //     setSuggestionError(false);
+    //     const handler = setTimeout(() => {
+    //         fetch('http://localhost:8000/api/houses/suggest-name/', {
+    //             method: 'POST',
+    //             credentials: 'include',
+    //             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
+    //             body: JSON.stringify({ name: houseName }),
+    //         })
+    //             .then(res => {
+    //                 if (!res.ok) throw new Error('Backend responded with an error');
+    //                 return res.json();
+    //             })
+    //             .then(data => setSuggestions(data.suggestions || []))
+    //             .catch(error => {
+    //                 console.error("Error fetching suggestions:", error);
+    //                 setSuggestions([]);
+    //                 setSuggestionError(true);
+    //             })
+    //             .finally(() => setIsSuggesting(false));
+    //     }, 700);
+    //     return () => clearTimeout(handler);
+    // }, [houseName]);
 
-    const handleSuggestionClick = (suggestion: string) => {
-        setHouseName(suggestion);
-        setSuggestions([]);
-    };
+    // const handleSuggestionClick = (suggestion: string) => {
+    //     setHouseName(suggestion);
+    //     setSuggestions([]);
+    // };
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
+        setIsCreating(true)
+        
         try {
             const response = await fetch('http://localhost:8000/api/houses/create/', {
                 method: 'POST',
                 credentials: 'include',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name: houseName }),
             });
-            const data = await response.json();
+
             if (response.ok) {
                 // UPDATED: The component now handles its own redirect.
                 router.push('/home?new=true');
             } else {
+                const data = await response.json();
                 alert(`Error: ${data.name || 'Could not create house.'}`);
             }
         } catch (error) {
             console.error("An error occurred during house creation:", error);
             alert("An unexpected error occurred.");
+        } finally {
+            setIsCreating(false)
         }
     };
 
@@ -127,15 +133,14 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
             return;
         }
         try {
-            const response = await fetch('http://localhost:8000/api/houses/use-invite/', {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
-                body: JSON.stringify({ code: fullOtp }),
+            const response = await fetch('http://localhost:8000/api/houses/join', { 
+                    method: 'POST',
+                    credentials: 'include', 
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ code: fullOtp }),
             });
             const data = await response.json();
             if (response.ok) {
-                // UPDATED: The component now handles its own redirect.
                 router.push('/home?new=true');
             } else {
                 alert(`Error: ${data.error || 'Failed to join house'}`);

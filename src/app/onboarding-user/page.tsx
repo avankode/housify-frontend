@@ -31,15 +31,15 @@ export default function OnboardingUserPage() {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await fetch('http://localhost:8000/api/profile/update/', {
-                method: 'PATCH',
-                credentials: 'include',
+            const response = await fetch('http://localhost:8000/api/user/profile', {
+                method: 'PUT', // 1. Changed from PATCH to PUT
+                credentials: 'include', // 2. This is CORRECT for HttpOnly cookies
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken') || '',
+                    // 3. 'X-CSRFToken' is no longer needed
                 },
                 body: JSON.stringify({
-                    display_name: displayName,
+                    displayName: displayName,
                     phone_number: phoneNumber,
                 }),
             });
@@ -61,7 +61,7 @@ export default function OnboardingUserPage() {
             <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl">
                 <img src="/logo.png" alt="Housify Logo" width={160} height={220} className="mx-auto mb-1" />
                 <h1 className="mb-2 text-3xl font-bold text-gray-800">Welcome to Housify!</h1>
-                <p className="mb-8 text-gray-600">Let's get your profile set up.</p>
+                <p className="mb-8 text-gray-600">Lets get your profile set up.</p>
 
                 <form onSubmit={handleSubmit} className="space-y-6 text-left">
                     <div>

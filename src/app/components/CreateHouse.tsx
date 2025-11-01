@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { getCookie } from '../utils';
+import { getAuthHeader, getCookie } from '../utils';
 import { useRouter } from 'next/navigation'; // NEW: Import the router
 
 interface CreateHouseProps {
@@ -64,7 +64,7 @@ const CreateHouse = ({ showDashboardView ,onSuccess}: CreateHouseProps) => {
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken') || '',
+                    ...getAuthHeader
                 },
                 body: JSON.stringify({ name: houseName }),
             });
