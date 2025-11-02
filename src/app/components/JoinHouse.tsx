@@ -3,6 +3,7 @@
 import React, { useState, useRef } from 'react';
 import Image from "next/image";
 import { useRouter } from 'next/navigation'; // NEW: Import the router
+import { API_BASE } from '@/utils/apiBase';
 
 const getCookie = (name: string) => {
     let cookieValue = null;
@@ -57,7 +58,7 @@ const JoinHouse = ({ showDashboardView }: JoinHouseProps) => {
         console.log("Attempting to join house with code:", fullOtp);
 
         try {
-            const response = await fetch('${API_BASE}/api/houses/use-invite/', {
+            const response = await fetch(`${API_BASE}/api/houses/use-invite/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {

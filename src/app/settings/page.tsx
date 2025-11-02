@@ -6,6 +6,7 @@ import { UserWithHouse } from '../utils';
 import Link from 'next/link';
 import {getCookie} from "@/src/app/utils";
 import Image from "next/image";
+import { API_BASE } from '@/utils/apiBase';
 
 // --- Reusable UI Components ---
 
@@ -53,7 +54,7 @@ export default function SettingsPage() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch('${API_BASE}/api/user/', { credentials: 'include' });
+                const response = await fetch(`${API_BASE}/api/user/`, { credentials: 'include' });
                 if (!response.ok) throw new Error('Failed to fetch user data.');
                 const data = await response.json();
                 setUser(data);
@@ -123,7 +124,7 @@ export default function SettingsPage() {
 
     const handleLeaveHouse = async () => {
         try {
-            const response = await fetch('${API_BASE}/api/houses/leave/', {
+            const response = await fetch(`${API_BASE}/api/houses/leave/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'X-CSRFToken': getCookie('csrftoken') || '' },
@@ -149,7 +150,7 @@ export default function SettingsPage() {
             return;
         }
         try {
-            const response = await fetch('${API_BASE}/api/houses/delete/', {
+            const response = await fetch(`${API_BASE}/api/houses/delete/`, {
                 method: 'DELETE',
                 credentials: 'include',
                 headers: { 'X-CSRFToken': getCookie('csrftoken') || '' },
@@ -169,7 +170,7 @@ export default function SettingsPage() {
     const handleTransferAdmin = async () => {
         if (!selectedMemberId) return;
         try {
-            const response = await fetch('${API_BASE}/api/houses/transfer-admin/', {
+            const response = await fetch(`${API_BASE}/api/houses/transfer-admin/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {

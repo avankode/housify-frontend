@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Image from "next/image";
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
+import { API_BASE } from '@/utils/apiBase';
 
 // Helper function to get the CSRF token
 const getCookie = (name: string) => {
@@ -31,7 +32,7 @@ export default function OnboardingUserPage() {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await fetch('${API_BASE}/api/profile/update/', {
+            const response = await fetch(`${API_BASE}/api/profile/update/`, {
                 method: 'PATCH',
                 credentials: 'include',
                 headers: {

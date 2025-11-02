@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCookie } from '../utils';
 import Image from "next/image";
+import { API_BASE } from '@/utils/apiBase';
 
 // --- Child Component: CreateHouse ---
 // This is the component you provided, with a few modifications.
@@ -23,7 +24,7 @@ const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
         setIsSuggesting(true);
         setSuggestionError(false);
         const handler = setTimeout(() => {
-            fetch('${API_BASE}/api/houses/suggest-name/', {
+            fetch(`${API_BASE}/api/houses/suggest-name/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
@@ -52,7 +53,7 @@ const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await fetch('${API_BASE}/api/houses/create/', {
+            const response = await fetch(`${API_BASE}/api/houses/create/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
@@ -127,7 +128,7 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
             return;
         }
         try {
-            const response = await fetch('${API_BASE}/api/houses/use-invite/', {
+            const response = await fetch(`${API_BASE}/api/houses/use-invite/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },

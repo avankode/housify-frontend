@@ -7,6 +7,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Layout from '../components/Layout';
 import {getCookie} from "@/src/app/utils";
 import Link from 'next/link';
+import { API_BASE } from '@/utils/apiBase';
 
 const DashboardTile = ({ title, color, href, children }: {
     title: string;
@@ -47,7 +48,7 @@ function HomeContent() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch('${API_BASE}/api/user/', { credentials: 'include' });
+                const response = await fetch(`${API_BASE}/api/user/`, { credentials: 'include' });
                 if (response.ok) {
                     const data = await response.json();
                     setUserData(data);
@@ -95,7 +96,7 @@ function HomeContent() {
     const handleLogout = async () => {
         try {
             // Call your backend logout endpoint. Adjust the URL if it's different.
-            await fetch('${API_BASE}/api/logout/', {
+            await fetch(`${API_BASE}/api/logout/`, {
                 method: 'POST',
                 credentials: 'include', // Important to send the session cookie
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },

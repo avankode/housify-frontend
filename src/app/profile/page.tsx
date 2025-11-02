@@ -5,6 +5,7 @@ import { UserWithHouse } from '../utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // Import the router hook
 import Image from "next/image";
+import { API_BASE } from '@/utils/apiBase';
 
 export default function ProfilePage() {
     const [user, setUser] = useState<UserWithHouse | null>(null);
@@ -15,7 +16,7 @@ export default function ProfilePage() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch('${API_BASE}/api/user/', {
+                const response = await fetch(`${API_BASE}/api/user/`, {
                     credentials: 'include',
                 });
                 if (!response.ok) {

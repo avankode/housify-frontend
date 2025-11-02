@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useRouter } from 'next/navigation';
 import { UserWithHouse } from '../utils';
 import { getCookie} from "../utils";
+import { API_BASE } from '@/utils/apiBase';
 
 // Define the shape of our context data
 interface UserContextType {
@@ -23,7 +24,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     const fetchUser = useCallback(async () => {
         try {
-            const response = await fetch('${API_BASE}/api/user/', { credentials: 'include' });
+            const response = await fetch(`${API_BASE}/api/user/`, { credentials: 'include' });
             if (response.status === 401) { // Unauthorized
                 console.log("YOU GOT ADMINIFIED")
                 setUser(null);
@@ -69,7 +70,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const logout = async () => {
         try {
             // Tell the backend to destroy the user's session
-            await fetch('${API_BASE}/api/logout/', {
+            await fetch(`${API_BASE}/api/logout/`, {
                 method: 'POST',
                 credentials: 'include', // Important to send the session cookie
                 headers: {

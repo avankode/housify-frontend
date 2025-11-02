@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { getCookie } from '../utils';
 import { useRouter } from 'next/navigation'; // NEW: Import the router
-
+import {API_BASE} from '@/utils/apiBase';
 interface CreateHouseProps {
     showDashboardView: () => void;
     // onSuccess: (newHouseData: any) => void;
@@ -27,7 +27,7 @@ const CreateHouse = ({ showDashboardView }: CreateHouseProps) => {
         setIsSuggesting(true);
         setSuggestionError(false);
         const handler = setTimeout(() => {
-            fetch('${API_BASE}/api/houses/suggest-name/', {
+            fetch(`${API_BASE}/api/houses/suggest-name/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
@@ -59,7 +59,7 @@ const CreateHouse = ({ showDashboardView }: CreateHouseProps) => {
         console.log(`Submitting to create house with name: ${houseName}`);
 
         try {
-            const response = await fetch('${API_BASE}/api/houses/create/', {
+            const response = await fetch(`${API_BASE}/api/houses/create/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
