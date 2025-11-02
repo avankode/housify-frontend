@@ -1,11 +1,9 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+const nextConfig = {
   async rewrites() {
     return [
       {
         source: "/api/:path*",
-        destination: "http://127.0.0.1:8000/:path*", // Django backend
+        destination: "http://127.0.0.1:8000/api/:path*", // ✅ same logic for local
       },
     ];
   },
