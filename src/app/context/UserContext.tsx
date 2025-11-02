@@ -55,7 +55,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     // Fetch user on initial load
     useEffect(() => {
         fetchUser();
-    }, ); // Run only once on mount
+    },[] ); // Run only once on mount
 
     // Add the "re-fetch on focus" event listener
     useEffect(() => {
