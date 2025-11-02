@@ -15,7 +15,7 @@ const Dashboard = ({ user, showCreateHouseView, showJoinHouseView, onLogout }: {
 
     const handleLogoutConfirm = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/logout/', {
+            const response = await fetch('${API_BASE}/api/logout/', {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'X-CSRFToken': getCookie('csrftoken') || '' },

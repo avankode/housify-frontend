@@ -15,7 +15,7 @@ export default function ProfilePage() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch('http://localhost:8000/api/user/', {
+                const response = await fetch('${API_BASE}/api/user/', {
                     credentials: 'include',
                 });
                 if (!response.ok) {
@@ -60,7 +60,7 @@ export default function ProfilePage() {
                 <div className="p-8">
                     <div className="text-center">
                         <Image
-                            src={`http://localhost:8000${user.profile.profile_photo}`}
+                            src={`${API_BASE}${user.profile.profile_photo}`}
                             alt="Profile"
                             className="w-32 h-32 rounded-full mx-auto border-4 border-green-200"
                         />

@@ -31,7 +31,7 @@ export default function OnboardingUserPage() {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await fetch('http://localhost:8000/api/profile/update/', {
+            const response = await fetch('${API_BASE}/api/profile/update/', {
                 method: 'PATCH',
                 credentials: 'include',
                 headers: {

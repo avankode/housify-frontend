@@ -23,7 +23,7 @@ const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
         setIsSuggesting(true);
         setSuggestionError(false);
         const handler = setTimeout(() => {
-            fetch('http://localhost:8000/api/houses/suggest-name/', {
+            fetch('${API_BASE}/api/houses/suggest-name/', {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
@@ -52,7 +52,7 @@ const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await fetch('http://localhost:8000/api/houses/create/', {
+            const response = await fetch('${API_BASE}/api/houses/create/', {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
@@ -127,7 +127,7 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
             return;
         }
         try {
-            const response = await fetch('http://localhost:8000/api/houses/use-invite/', {
+            const response = await fetch('${API_BASE}/api/houses/use-invite/', {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },

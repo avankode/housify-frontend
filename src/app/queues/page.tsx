@@ -30,7 +30,7 @@ export default function QueuesPage(){
     const fetchQueue = useCallback(async () => {
         if (!user || !user.house) return; // Don't fetch if no user/house
         try {
-            const queueRes = await fetch('http://localhost:8000/api/queues/', { credentials: 'include' });
+            const queueRes = await fetch('${API_BASE}/api/queues/', { credentials: 'include' });
             if (!queueRes.ok) throw new Error('Failed to fetch queue');
             const queueData = await queueRes.json();
             setQueue(queueData);
@@ -45,7 +45,7 @@ export default function QueuesPage(){
                 setIsDataLoading(true);
                 try {
                     // Fetch inventory only once
-                    const inventoryRes = await fetch('http://localhost:8000/api/inventory/', { credentials: 'include' });
+                    const inventoryRes = await fetch('${API_BASE}/api/inventory/', { credentials: 'include' });
                     if (!inventoryRes.ok) throw new Error('Failed to fetch inventory');
                     const inventoryData = await inventoryRes.json();
                     setInventory(inventoryData);
@@ -87,8 +87,8 @@ export default function QueuesPage(){
     //         const fetchData = async () => {
     //             try {
     //                 const [inventoryRes, queueRes] = await Promise.all([
-    //                     fetch('http://localhost:8000/api/inventory/', { credentials: 'include' }),
-    //                     fetch('http://localhost:8000/api/queues/', { credentials: 'include' })
+    //                     fetch('${API_BASE}/api/inventory/', { credentials: 'include' }),
+    //                     fetch('${API_BASE}/api/queues/', { credentials: 'include' })
     //                 ]);
     //                 if (!inventoryRes.ok || !queueRes.ok) throw new Error('Failed to fetch data');
     //
@@ -166,8 +166,8 @@ export default function QueuesPage(){
     //             try {
     //                 // Fetch both endpoints at the same time
     //                 const [inventoryRes, queueRes] = await Promise.all([
-    //                     fetch('http://localhost:8000/api/inventory/', {credentials: 'include'}),
-    //                     fetch('http://localhost:8000/api/queues/', {credentials: 'include'})
+    //                     fetch('${API_BASE}/api/inventory/', {credentials: 'include'}),
+    //                     fetch('${API_BASE}/api/queues/', {credentials: 'include'})
     //                 ]);
     //
     //                 if (!inventoryRes.ok || !queueRes.ok) {
@@ -214,7 +214,7 @@ export default function QueuesPage(){
     const handleAddItemToQueue = async (item: InventoryItem, quantity: number, provider: string) => {
         console.log("Adding item via API:", item.name, quantity, provider);
         try {
-            const response = await fetch('http://localhost:8000/api/queues/add/', {
+            const response = await fetch('${API_BASE}/api/queues/add/', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -242,7 +242,7 @@ export default function QueuesPage(){
     const handleDeleteItem = async (id: number) => { // The ID is now a number
         console.log("Deleting item via API:", id);
         try {
-            const response = await fetch(`http://localhost:8000/api/queues/${id}/delete/`, {
+            const response = await fetch(`${API_BASE}/api/queues/${id}/delete/`, {
                 method: 'DELETE',
                 credentials: 'include',
                 headers: {
@@ -262,7 +262,7 @@ export default function QueuesPage(){
     const handleClearQueue = async () => {
         console.log("Clearing queue via API...");
         try {
-            const response = await fetch('http://localhost:8000/api/queues/clear/', {
+            const response = await fetch('${API_BASE}/api/queues/clear/', {
                 method: 'POST', // Or 'DELETE' if you prefer, backend handles POST
                 credentials: 'include',
                 headers: {

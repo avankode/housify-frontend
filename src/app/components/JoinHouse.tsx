@@ -57,7 +57,7 @@ const JoinHouse = ({ showDashboardView }: JoinHouseProps) => {
         console.log("Attempting to join house with code:", fullOtp);
 
         try {
-            const response = await fetch('http://localhost:8000/api/houses/use-invite/', {
+            const response = await fetch('${API_BASE}/api/houses/use-invite/', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
