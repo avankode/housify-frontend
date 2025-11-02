@@ -1,9 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter ,usePathname } from 'next/navigation';
 import { UserWithHouse } from '../utils';
-import { getCookie} from "../utils";
 import { API_BASE } from '@/utils/apiBase';
 
 // Define the shape of our context data
@@ -13,79 +12,109 @@ interface UserContextType {
     logout: () => void;
 }
 
-// Create the context with a default value of undefined
+
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-// Create the Provider component
+const PUBLIC_PATHS = ['/', '/login', '/login/success']; 
+const ONBOARDING_PATHS = ['/onboarding-user', '/onboarding-house'];
+
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<UserWithHouse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
+    const pathname = usePathname();
 
     const fetchUser = useCallback(async () => {
-        try {
-            const response = await fetch(`${API_BASE}/api/user/`, { credentials: 'include' });
-            if (response.status === 401) { // Unauthorized
-                console.log("YOU GOT ADMINIFIED")
-                setUser(null);
-                return;
-            }
-            if (!response.ok) {
-                throw new Error("Failed to fetch user");
-            }
-            const data = await response.json();
+        const token = localStorage.getItem('apiToken');
+        if (!token) {
+            setUser(null);
+            setIsLoading(false);
+            return;
+        }
 
-            // Your smart logic: Check if a logged-in user was removed from a house
-            console.log("this is your house mate ",user?.house)
-            console.log("who is ts diva ? : ",user)
-            console.log("well the data says that " , data.house) 
-            if (user && user.house && !data.house) {
-                router.push('/user-house-deleted');
-            } else {
+        try {
+            const response = await fetch(`${API_BASE}/api/user/`, {
+                method: 'GET',
+                credentials: 'omit',
+                headers: {
+                    'Authorization': `Token ${token}`
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
                 setUser(data);
+            } else {
+                setUser(null);
+                localStorage.removeItem('apiToken');
             }
         } catch (error) {
-            console.error("Fetch user error:", error);
-            setUser(null); // Set user to null on any fetch error
+            setUser(null);
         } finally {
             setIsLoading(false);
         }
-    }, [router, user]); // Include user in dependencies to compare old vs new state
+    }, []);
 
-    // Fetch user on initial load
     useEffect(() => {
-        fetchUser();
-    },[] ); // Run only once on mount
+        if (!PUBLIC_PATHS.includes(pathname)) {
+            fetchUser();
+        } else {
+            setIsLoading(false);
+        }
+    }, [pathname, fetchUser]);
 
-    // Add the "re-fetch on focus" event listener
     useEffect(() => {
-        window.addEventListener('focus', fetchUser);
-        const intervalId = setInterval(fetchUser, 60000);
-        return () => {
-            window.removeEventListener('focus', fetchUser);
-            clearInterval(intervalId);
-        };
-    }, [fetchUser]);
+        if (isLoading) {
+            return; 
+        }
+
+        const isPublic = PUBLIC_PATHS.includes(pathname);
+        const isOnboarding = ONBOARDING_PATHS.includes(pathname);
+
+        if (!user) {
+            if (!isPublic) {
+                router.push('/');
+            }
+            return;
+        }
+
+        if (user.profile && !user.profile.display_name) {
+            if (pathname !== '/onboarding-user') {
+                router.push('/onboarding-user');
+            }
+            return;
+        }
+
+        if (!user.house) {
+            if (pathname !== '/onboarding-house') {
+                router.push('/onboarding-house');
+            }
+            return;
+        }
+
+        if (isPublic || isOnboarding) {
+            router.push('/home');
+        }
+
+    }, [user, isLoading, router, pathname]);
 
     const logout = async () => {
-        try {
-            // Tell the backend to destroy the user's session
-            await fetch(`${API_BASE}/api/logout/`, {
-                method: 'POST',
-                credentials: 'include', // Important to send the session cookie
-                headers: {
-                    // Django's security requires a CSRF token for POST requests
-                    'X-CSRFToken': getCookie('csrftoken') || '',
-                },
-            });
-        } catch (error) {
-            console.error("Error during backend logout:", error);
-        } finally {
-            // This ensures the frontend logs out even if the backend call fails
-            setUser(null);
-            // Redirect to the login page to complete the logout flow
-            router.push('/');
+        const token = localStorage.getItem('apiToken');
+        if (token) {
+            try {
+                await fetch(`${API_BASE}/api/logout/`, {
+                    method: 'POST',
+                    credentials: 'omit',
+                    headers: {
+                        'Authorization': `Token ${token}`
+                    }
+                });
+            } catch (error) {
+                console.error("Error during backend logout:", error);
+            }
         }
+        localStorage.removeItem('apiToken');
+        setUser(null);
     };
 
     const value = { user, isLoading, logout };
@@ -97,7 +126,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     );
 };
 
-// Create a custom hook to easily access the context
 export const useUser = () => {
     const context = useContext(UserContext);
     if (context === undefined) {

@@ -16,18 +16,25 @@ const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
     const router = useRouter();
 
     useEffect(() => {
-        // ... (The AI suggestion logic remains unchanged)
+
         if (houseName.length < 3) {
             setSuggestions([]);
             return;
         }
         setIsSuggesting(true);
         setSuggestionError(false);
+
+        const token = localStorage.getItem('apiToken'); // 1. Get token
+        if (!token) return;
+
         const handler = setTimeout(() => {
             fetch(`${API_BASE}/api/houses/suggest-name/`, {
                 method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
+                credentials: 'omit',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Token ${token}`
+                },
                 body: JSON.stringify({ name: houseName }),
             })
                 .then(res => {
@@ -52,16 +59,25 @@ const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
+        const token = localStorage.getItem('apiToken'); // 1. Get token
+        if (!token) {
+            alert("Error: Not logged in.");
+            return;
+        }
+
+
         try {
             const response = await fetch(`${API_BASE}/api/houses/create/`, {
                 method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
+                credentials: 'omit',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                     'Authorization': `Token ${token}`   
+                },
                 body: JSON.stringify({ name: houseName }),
             });
             const data = await response.json();
             if (response.ok) {
-                // UPDATED: The component now handles its own redirect.
                 router.push('/home?new=true');
             } else {
                 alert(`Error: ${data.name || 'Could not create house.'}`);
@@ -86,7 +102,6 @@ const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
                     )}
                 </div>
                 <div className="flex space-x-4 pt-2">
-                    {/* UPDATED: The "Cancel" button now calls showChoiceView */}
                     <button type="button" onClick={showChoiceView} className="w-full rounded-md bg-gray-200 px-6 py-3 font-semibold">Cancel</button>
                     <button type="submit" className="w-full rounded-md bg-black px-6 py-3 font-semibold text-white">Create</button>
                 </div>
@@ -122,6 +137,13 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
+        const token = localStorage.getItem('apiToken'); // 1. Get token
+        if (!token) {
+            alert("Error: Not logged in.");
+            return;
+        }
+
+
         const fullOtp = otp.join('');
         if (fullOtp.length !== 6) {
             alert('Please enter a complete 6-digit code.');
@@ -131,12 +153,14 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
             const response = await fetch(`${API_BASE}/api/houses/use-invite/`, {
                 method: 'POST',
                 credentials: 'include',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Token ${token}`
+                },
                 body: JSON.stringify({ code: fullOtp }),
             });
             const data = await response.json();
             if (response.ok) {
-                // UPDATED: The component now handles its own redirect.
                 router.push('/home?new=true');
             } else {
                 alert(`Error: ${data.error || 'Failed to join house'}`);
@@ -164,7 +188,6 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
                     ))}
                 </div>
                 <div className="flex space-x-4 pt-2">
-                    {/* UPDATED: The "Cancel" button now calls showChoiceView */}
                     <button type="button" onClick={showChoiceView} className="w-full rounded-md bg-gray-700 px-6 py-3 font-semibold text-white">Cancel</button>
                     <button type="submit" className="w-full rounded-md bg-green-600 px-6 py-3 font-semibold text-white">Verify</button>
                 </div>
@@ -173,9 +196,8 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
     );
 };
 
-// --- The Main Controller for this Page ---
+
 export default function OnboardingHousePage() {
-    // NEW: This state variable controls which view is shown on this page
     const [view, setView] = useState<'CHOICE' | 'CREATE' | 'JOIN'>('CHOICE');
 
     const renderContent = () => {

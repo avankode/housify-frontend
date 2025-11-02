@@ -31,13 +31,21 @@ export default function OnboardingUserPage() {
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
+
+        const token = localStorage.getItem('apiToken');
+        if (!token) {
+            alert("No token found. Please log in again.");
+            return;
+        }
+
+
         try {
             const response = await fetch(`${API_BASE}/api/profile/update/`, {
                 method: 'PATCH',
-                credentials: 'include',
+                credentials: 'omit',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken') || '',
+                    'Authorization': `Token ${token}`,
                 },
                 body: JSON.stringify({
                     display_name: displayName,
