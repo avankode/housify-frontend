@@ -59,7 +59,7 @@ export default function ProfilePage() {
             <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
                 <div className="p-8">
                     <div className="text-center">
-                        <Image
+                        <img
                             src={`http://localhost:8000${user.profile.profile_photo}`}
                             alt="Profile"
                             className="w-32 h-32 rounded-full mx-auto border-4 border-green-200"

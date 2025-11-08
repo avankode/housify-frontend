@@ -20,7 +20,7 @@ export default function QueueItemTile({ item, onDelete }: Props) {
 
     return (
         <div className="flex items-center p-3 bg-white border border-gray-200 rounded-lg shadow-sm mb-3">
-            <Image
+            <img
                 src={inventoryItem.image_url}
                 alt={inventoryItem.name}
                 className="w-16 h-16 object-contain rounded-md"

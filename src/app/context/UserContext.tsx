@@ -49,12 +49,12 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         } finally {
             setIsLoading(false);
         }
-    }, [router, user]); // Include user in dependencies to compare old vs new state
+    }, [router,user]); // Include user in dependencies to compare old vs new state
 
     // Fetch user on initial load
     useEffect(() => {
         fetchUser();
-    }, ); // Run only once on mount
+    },[] ); // Run only once on mount
 
     // Add the "re-fetch on focus" event listener
     useEffect(() => {

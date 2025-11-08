@@ -68,7 +68,7 @@ export default function InventoryCarousel({ inventory, onItemClick, isPaused }: 
                         }`}
                         onClick={() => onItemClick(item)}
                     >
-                        <Image
+                        <img
                             src={item.image_url}
                             alt={item.name}
                             className="w-24 h-24 object-contain"

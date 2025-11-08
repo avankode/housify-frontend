@@ -298,7 +298,7 @@ export default function SettingsPage() {
                             onClick={() => setSelectedMemberId(member.id)}
                             className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${selectedMemberId === member.id ? 'bg-green-100 border-green-400 border' : 'hover:bg-gray-100'}`}
                         >
-                            <Image src={member.profile_photo_url} alt={member.display_name} className="w-10 h-10 rounded-full mr-4" />
+                            <img src={member.profile_photo_url} alt={member.display_name} className="w-10 h-10 rounded-full mr-4" />
                             <span className="font-semibold">{member.display_name}</span>
                         </div>
                     ))}

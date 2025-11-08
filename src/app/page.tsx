@@ -75,7 +75,7 @@ export default function LandingPage() {
                 className="flex flex-col items-center justify-center space-y-8 px-4 text-center"
             >
                 <motion.div variants={FADE_IN_ANIMATION_VARIANTS}>
-                    <Image
+                    <img
                         src="/logo.png"
                         alt="Housify Logo"
                         width={200}

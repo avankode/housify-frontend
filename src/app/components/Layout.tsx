@@ -18,7 +18,7 @@ const Layout = ({ children, houseName, onLogout }: {
                         {/* 1. Left Column: Logo */}
                         <div className="justify-self-start">
                             <Link href="/home">
-                                <Image
+                                <img
                                     src="/logo.png"
                                     alt="Housify Logo"
                                     className="h-16 w-15 cursor-pointer"
@@ -51,7 +51,7 @@ const Layout = ({ children, houseName, onLogout }: {
                 </nav>
             </header>
 
-            <main className="container mx-auto px-6 py-8">
+            <main >
                 {children}
             </main>
 

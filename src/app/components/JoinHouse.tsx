@@ -84,7 +84,7 @@ const JoinHouse = ({ showDashboardView }: JoinHouseProps) => {
     return (
         <div className="w-full max-w-md rounded-2xl bg-black p-8 text-center shadow-xl text-white">
             <div className="flex justify-center mb-6">
-                <Image src="/lock_icon.png" alt="Lock Icon" className="w-16 h-16" />
+                <img src="/lock_icon.png" alt="Lock Icon" className="w-16 h-16" />
             </div>
             <h1 className="mb-2 text-3xl font-bold">Enter your Verification Code</h1>
             <p className="mb-8 text-gray-400">Ask your House admin for the code!</p>
