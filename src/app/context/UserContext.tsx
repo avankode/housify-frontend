@@ -35,27 +35,29 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
             }
             const data = await response.json();
 
-            // Your smart logic: Check if a logged-in user was removed from a house
-            console.log("this is your house mate ",user?.house)
-            console.log("who is ts diva ? : ",user)
-            console.log("well the data says that " , data.house) 
-            if (user && user.house && !data.house) {
-                router.push('/user-house-deleted');
-            } else {
-                setUser(data);
-            }
+                setUser(currentUser => {
+                // Your smart logic: Check if a logged-in user was removed from a house
+                console.log("this is your house mate ",currentUser?.house)
+                console.log("who is ts diva ? : ",currentUser)
+                console.log("well the data says that " , data.house) 
+                if (currentUser && currentUser.house && !data.house) {
+                    router.push('/user-house-deleted');
+                }
+                // In all cases, set the user to the new data from the API
+                return data;
+            });
         } catch (error) {
             console.error("Fetch user error:", error);
             setUser(null); // Set user to null on any fetch error
         } finally {
             setIsLoading(false);
         }
-    }, [router,user]); // Include user in dependencies to compare old vs new state
+    }, [router]); // Include user in dependencies to compare old vs new state
 
     // Fetch user on initial load
     useEffect(() => {
         fetchUser();
-    },[] ); // Run only once on mount
+    },[fetchUser] ); // Run only once on mount
 
     // Add the "re-fetch on focus" event listener
     useEffect(() => {

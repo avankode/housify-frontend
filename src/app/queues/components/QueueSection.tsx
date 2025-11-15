@@ -39,7 +39,7 @@ const calculateTotals = (queue: QueueItem[]) => {
 };
 
 // --- Main Component ---
-export default function QueueSection({ queue, onDeleteItem, googleChatWebhook, onClearQueue ,onPurchaseQueue }: Props) {
+export default function QueueSection({ queue, onDeleteItem, googleChatWebhook,onPurchaseQueue }: Props) {
     const [buttonState, setButtonState] = useState({ text: 'Queue Ready', color: 'bg-gray-400', disabled: true });
     const [readyProviders, setReadyProviders] = useState<string[]>([]);
 
