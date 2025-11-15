@@ -91,7 +91,7 @@ export default function QueueSection({ queue, onDeleteItem, googleChatWebhook, o
                                 "header": {
                                     "title": `${provider.toUpperCase()} IT!`,
                                     "subtitle": "Your Housify order is ready to be placed.",
-                                    "imageUrl": "https://i.imgur.com/x0R4sPz.png", // A generic cart icon
+                                    "imageUrl": "https://i.Imageur.com/x0R4sPz.png", // A generic cart icon
                                     "imageType": "CIRCLE"
                                 },
                                 "sections": [

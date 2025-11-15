@@ -10,6 +10,7 @@ interface UserContextType {
     user: UserWithHouse | null;
     isLoading: boolean;
     logout: () => void;
+    fetchUser: () => Promise<void>;
 }
 
 // Create the context with a default value of undefined
@@ -87,7 +88,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
-    const value = { user, isLoading, logout };
+    const value = { user, isLoading, logout ,fetchUser};
 
     return (
         <UserContext.Provider value={value}>

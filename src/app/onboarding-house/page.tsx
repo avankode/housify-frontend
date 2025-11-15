@@ -151,7 +151,7 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
     return (
         <div className="w-full max-w-md rounded-2xl bg-black p-8 text-center shadow-xl text-white">
             <div className="flex justify-center mb-6">
-                <img src="/lock_icon.png" alt="Lock Icon" className="w-16 h-16" />
+                <Image src="/lock_icon.png" alt="Lock Icon" className="w-16 h-16" />
             </div>
             <h1 className="mb-2 text-3xl font-bold">Enter your Verification Code</h1>
             <p className="mb-8 text-gray-400">Ask your House admin for the code!</p>
@@ -252,7 +252,7 @@ export default function OnboardingHousePage() {
             default:
                 return (
                     <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl">
-                        <img src="/logo.png" alt="Housify Logo" width={160} height={220} className="mx-auto mb-1" />
+                        <Image src="/logo.png" alt="Housify Logo" width={160} height={220} className="mx-auto mb-1" />
                         <h1 className="mb-4 text-3xl font-bold text-gray-800">Welcome to Housify!</h1>
                         <p className="mb-8 text-gray-600">You&apos;re not part of a house yet. Get started by creating or joining one.</p>
                         <div className="space-y-4">

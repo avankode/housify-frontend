@@ -346,9 +346,13 @@ export default function QueuesPage(){
             console.log("Purchased items cleared from queue.");
             alert("Purchase successful! Expense created in the Expenses tab.");
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Failed during purchase process:", err);
-            alert(`Error: ${err.message}`);
+            if (err instanceof Error) {
+                alert(`Error: ${err.message}`);
+            } else {
+                alert("An unknown error occurred.");
+            }
         }
     };
 

@@ -3,7 +3,7 @@
 // --- 1. Import your new modal component ---
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image'; // This import is unused, your code uses <img>
+import Image from 'next/image'; // This import is unused, your code uses <Image>
 import InviteCodeModal from './InviteCodeModal'; // Assuming it's in the same /components folder
 import { getCookie } from '../utils';
 
@@ -61,7 +61,7 @@ const Layout = ({ children, houseName, onLogout }: {
                         {/* 1. Left Column: Logo */}
                         <div className="justify-self-start">
                             <Link href="/home">
-                                <img
+                                <Image
                                     src="/logo.png"
                                     alt="Housify Logo"
                                     className="h-16 w-15 cursor-pointer"

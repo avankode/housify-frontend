@@ -33,16 +33,30 @@ interface PaginatedExpenses {
     results: Expense[];
 }
 interface BannerStats {
-    total_groceries: number;
-    total_shared_rentals: number;
-    your_personal_dues: number;
+    total_groceries: string;
+    total_shared_rentals: string;
+    your_personal_dues: string;
     member_count: number;
 }
 interface BannerItem {
     id: number;
     text: string;
 }
-
+interface MonthPickerProps {
+    selectedMonth: Date | null;
+    onChange: (date: Date | null) => void;
+}
+interface AddExpenseModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    selectedMonth: Date | null;
+    initialData : Expense | null
+}
+interface ExpenseListProps {
+    activeTab: 'GROCERIES' | 'SHARED_RENTAL' | 'PERSONAL_DUE';
+    selectedMonth: Date | null;
+    onRenewClick : (item: Expense) => void;
+}
 // This fetcher is for GET requests, so we REMOVE the CSRF token header.
 const fetcher = (url: string) => {
     return fetch(url, {
@@ -60,7 +74,11 @@ const fetcher = (url: string) => {
 };
 
 // --- Timezone Helper (Unchanged) ---
-const getMonthUTCEdges = (date: Date) => {
+const getMonthUTCEdges = (date: Date|null) => {
+    if (date === null){
+        alert("date cannot be null");
+        return;
+    }
     const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
     const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 1);
     return {
@@ -72,14 +90,18 @@ const getMonthUTCEdges = (date: Date) => {
 // --- The Main Page Component ---
 export default function ExpensesPage() {
     const [activeTab, setActiveTab] = useState<'GROCERIES' | 'SHARED_RENTAL' | 'PERSONAL_DUE'>('GROCERIES');
-    const [selectedMonth, setSelectedMonth] = useState(new Date());
+    const [selectedMonth, setSelectedMonth] = useState<Date | null>(new Date());
     const [bannerData, setBannerData] = useState<BannerItem[] | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalData, setModalData] = useState<Expense | null>(null);
 
     useEffect(() => {
         const fetchBannerData = async () => {
-            const { start_date, end_date } = getMonthUTCEdges(selectedMonth);
+            const edges = getMonthUTCEdges(selectedMonth);
+            if(!edges){
+                return null;
+            }
+            const { start_date , end_date } = edges;
             const baseUrl = 'http://localhost:8000';
 
             try {
@@ -91,9 +113,9 @@ export default function ExpensesPage() {
                 if (res.ok) {
                     const data: BannerStats = await res.json();
                     
-                    const total_groceries = parseFloat(data.total_groceries as any) || 0;
-                    const total_shared_rentals = parseFloat(data.total_shared_rentals as any) || 0;
-                    const your_personal_dues = parseFloat(data.your_personal_dues as any) || 0;
+                    const total_groceries = parseFloat(data.total_groceries as string) || 0;
+                    const total_shared_rentals = parseFloat(data.total_shared_rentals as string) || 0;
+                    const your_personal_dues = parseFloat(data.your_personal_dues as string) || 0;
                     const member_count = data.member_count;
                     const safeMemberCount = member_count > 0 ? member_count : 1;
 
@@ -211,10 +233,6 @@ const TabButton: FC<TabButtonProps> = ({ title, isActive, onClick }) => (
     </button>
 );
 
-interface MonthPickerProps {
-    selectedMonth: Date;
-    onChange: (date: Date) => void;
-}
 const MonthPicker: FC<MonthPickerProps> = ({ selectedMonth, onChange }) => (
     <DatePicker
         selected={selectedMonth}
@@ -229,19 +247,20 @@ const MonthPicker: FC<MonthPickerProps> = ({ selectedMonth, onChange }) => (
 // --- ================================================ ---
 // --- === THIS IS THE THIRD FIX === ---
 // --- ================================================ ---
-interface ExpenseListProps {
-    activeTab: 'GROCERIES' | 'SHARED_RENTAL' | 'PERSONAL_DUE';
-    selectedMonth: Date;
-    onRenewClick : (item: Expense) => void;
-}
 const ExpenseList: FC<ExpenseListProps> = ({ activeTab, selectedMonth , onRenewClick }) => {
     
     const getKey = (pageIndex: number, previousPageData: PaginatedExpenses | null): string | null => {
         const baseUrl = 'http://localhost:8000';
         
-
+        if (!selectedMonth) {
+            return null;
+        }
         if (pageIndex === 0) {
-            const { start_date, end_date } = getMonthUTCEdges(selectedMonth);
+            const edges = getMonthUTCEdges(selectedMonth);
+            if(!edges){
+                return null;
+            }
+            const { start_date , end_date } = edges;
             return `${baseUrl}/api/expenses/?category=${activeTab}&start_date=${start_date}&end_date=${end_date}&page=1`;
         }
         if (!previousPageData?.next) return null;
@@ -288,7 +307,7 @@ const ExpenseList: FC<ExpenseListProps> = ({ activeTab, selectedMonth , onRenewC
 // --- Card Components (Unchanged) ---
 interface CardProps {
     item: Expense;
-    
+    onRenew?: (item: Expense) => void;
 }
 
 const getProviderColors = (name: string) => {
@@ -405,12 +424,6 @@ const PersonalDueCard: FC<CardProps> = ({ item , onRenew}) => (
 
 // --- AddExpenseModal (Unchanged) ---
 // Your code here was already correct for CSRF.
-interface AddExpenseModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    selectedMonth: Date;
-    initialData : Expense | null
-}
 const AddExpenseModal: FC<AddExpenseModalProps> = ({ isOpen, onClose, selectedMonth, initialData}) => {
     const [step, setStep] = useState(1);
     const [category, setCategory] = useState<'SHARED_RENTAL' | 'PERSONAL_DUE' | null>(null);
@@ -458,6 +471,12 @@ const AddExpenseModal: FC<AddExpenseModalProps> = ({ isOpen, onClose, selectedMo
         setIsLoading(true);
         setError(null);
         
+        if (!selectedMonth) {
+        setError("Please select a valid month.");
+        setIsLoading(false);
+        return;
+    }
+
         const expenseDate = new Date(selectedMonth); // Default: create for the *currently viewed* month
         
         if (initialData) {
@@ -506,8 +525,12 @@ const AddExpenseModal: FC<AddExpenseModalProps> = ({ isOpen, onClose, selectedMo
             handleClose();
             refreshData();
             
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            if(err instanceof Error){
+                setError(err.message);
+            } else {
+                setError("An error occured during handle submit for expense cards");
+            }
         } finally {
             setIsLoading(false);
         }

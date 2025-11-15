@@ -9,7 +9,7 @@ import Image from "next/image";
 
 // --- Reusable UI Components ---
 
-const Modal = ({ isOpen,onClose, children }: { isOpen: boolean; onClose?: () => void; children: React.ReactNode }) => {
+const Modal = ({ isOpen, children }: { isOpen: boolean; onClose?: () => void; children: React.ReactNode }) => {
     if (!isOpen) return null;
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
@@ -298,7 +298,7 @@ export default function SettingsPage() {
                             onClick={() => setSelectedMemberId(member.id)}
                             className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${selectedMemberId === member.id ? 'bg-green-100 border-green-400 border' : 'hover:bg-gray-100'}`}
                         >
-                            <img src={member.profile_photo_url} alt={member.display_name} className="w-10 h-10 rounded-full mr-4" />
+                            <Image src={member.profile_photo_url} alt={member.display_name} className="w-10 h-10 rounded-full mr-4" />
                             <span className="font-semibold">{member.display_name}</span>
                         </div>
                     ))}

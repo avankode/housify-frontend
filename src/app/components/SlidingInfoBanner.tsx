@@ -1,14 +1,17 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 
-/**
- * @component SlidingInfoBanner
- * A reusable, prominent banner that cycles through content and
- * displays a "progress of the month" bar.
- *
- * @prop {Array<Object>} items - An array of objects, e.g., [{ id: 1, text: "..." }]
- */
-const SlidingInfoBanner = ({ items  }) => {
+interface InfoItem {
+    id: string | number; // Based on item.id
+    text: string;        // Based on item.text
+}
+
+// --- 2. Define the shape of the component's props ---
+interface SlidingInfoBannerProps {
+    items: InfoItem[];
+}
+
+const SlidingInfoBanner = ({ items } : SlidingInfoBannerProps) => {
 
 
     const [currentIndex, setCurrentIndex] = useState(0);
