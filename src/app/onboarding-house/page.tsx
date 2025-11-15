@@ -4,16 +4,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCookie } from '../utils';
 import Image from "next/image";
+import { useUser } from '../context/UserContext';
 
 // --- Child Component: CreateHouse ---
 // This is the component you provided, with a few modifications.
+const API_BASE_BACKEND = 'http://localhost:8000';
 const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
     const [houseName, setHouseName] = useState('');
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [isSuggesting, setIsSuggesting] = useState(false);
     const [suggestionError, setSuggestionError] = useState(false);
     const router = useRouter();
-
+    
     useEffect(() => {
         // ... (The AI suggestion logic remains unchanged)
         if (houseName.length < 3) {
@@ -175,10 +177,73 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
 // --- The Main Controller for this Page ---
 export default function OnboardingHousePage() {
     // NEW: This state variable controls which view is shown on this page
-    const [view, setView] = useState<'CHOICE' | 'CREATE' | 'JOIN'>('CHOICE');
+    const [view, setView] = useState<'CHOICE' | 'CREATE' | 'JOIN' | 'AUTO_JOINING'>('CHOICE');
+    const router = useRouter();
+    const { fetchUser  } = useUser(); // 4. Get the fetchUser function
+// --- 5. ADD THIS ENTIRE useEffect BLOCK ---
+    useEffect(() => {
+        const pendingCode = localStorage.getItem('pendingInviteCode');
+        
+        if (pendingCode) {
+            // A pending invite exists! Try to use it.
+            setView('AUTO_JOINING');
+            
+            const joinWithCode = async () => {
+                const token = getCookie('csrftoken');
+                if (!token) {
+                    // This should not happen if they just logged in
+                    alert("Authentication error. Please log in again.");
+                    localStorage.removeItem('pendingInviteCode');
+                    setView('CHOICE');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${API_BASE_BACKEND}/api/houses/use-invite/`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken') || '',
+                        },
+                        body: JSON.stringify({ code: pendingCode })
+                    });
+                    
+                    if (response.ok) {
+                        localStorage.removeItem('pendingInviteCode'); // Success!
+                        await fetchUser(); // Re-fetch user data to update context
+                        router.push('/home?new=true'); // Go to home!
+                    } else {
+                        // The code was bad or expired (This is where Scenario 3 fails)
+                        const data = await response.json();
+                        localStorage.removeItem('pendingInviteCode');
+                        setView('CHOICE'); // Show them the normal page
+                        alert(`Invite Error: ${data.error || "Invalid or expired."}`);
+                    }
+                } catch (err) {
+                    console.log("join with code gave an error",err);
+                    setView('CHOICE');
+                    alert("An error occurred while joining.");
+                }
+            };
+            
+            joinWithCode();
+        }
+    }, [router, fetchUser]); // Runs once on page load
+    // --- END OF NEW BLOCK ---
+
 
     const renderContent = () => {
         switch(view) {
+            case 'AUTO_JOINING':
+                {
+            return (
+                <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl">
+                    <h1 className="text-2xl font-bold">Joining house...</h1>
+                    <p className="mt-4 text-gray-600">Your invite is being processed. Please wait.</p>
+                </div>
+            );
+        }
             case 'CREATE':
                 return <CreateHouse showChoiceView={() => setView('CHOICE')} />;
             case 'JOIN':

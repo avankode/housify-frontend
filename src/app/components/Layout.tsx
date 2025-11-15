@@ -1,14 +1,57 @@
 "use client";
 
-import React , { useState } from 'react';
+// --- 1. Import your new modal component ---
+import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image'
+import Image from 'next/image'; // This import is unused, your code uses <img>
+import InviteCodeModal from './InviteCodeModal'; // Assuming it's in the same /components folder
+import { getCookie } from '../utils';
+
 const Layout = ({ children, houseName, onLogout }: {
     children: React.ReactNode;
     houseName: string;
     onLogout?: () => void;
 }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    
+    // --- 2. Add state for the new invite modal ---
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+    const API_BASE_BACKEND = "http://localhost:8000"
+    const API_BASE_FRONTEND = "http://localhost:3000"
+    // This new function handles closing the drawer AND opening the modal
+    const handleInviteClick = () => {
+        setIsDrawerOpen(false);
+        setIsInviteModalOpen(true);
+    };
+    const handleCopyInviteLink = async() => {
+        try{
+                const response = await fetch(`${API_BASE_BACKEND}/api/houses/create-invite/`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken') || '',
+                },
+                body: JSON.stringify({ invite_type : 'LINK' }),
+            });        
+            if (!response.ok) throw new Error('Failed to generate link');
+
+            const data = await response.json();
+            const inviteCode = data.code;
+
+            // 2. Build the full frontend URL
+            const inviteUrl = `${API_BASE_FRONTEND}/join?invite_code=${inviteCode}`;
+            console.log("this is the link ",inviteUrl);
+            // 3. Copy to clipboard
+            await navigator.clipboard.writeText(inviteUrl);
+            alert("Invite link copied to clipboard!"); // We can make this a nicer popup later
+            setIsDrawerOpen(false);
+        } catch (err) {
+            console.error("Error copying invite link:", err);
+            alert("Could not generate invite link. Are you the admin?");
+        }
+    };
+
     return (
         <div className="min-h-screen w-full bg-green-50">
             <header className="bg-white shadow-md">
@@ -34,14 +77,13 @@ const Layout = ({ children, houseName, onLogout }: {
                         </div>
 
                         {/* 3. Right Column: Drawer Button */}
-                        {/* THIS IS THE FIX: Replaced flexbox classes with grid alignment */}
                         <div className="justify-self-end">
                             <button
                                 onClick={() => setIsDrawerOpen(true)}
                                 className="p-2 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
                                 aria-label="Open menu"
                             >
-                                <svg className="h-6 w-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="http://www.w3.org/2000/svg" stroke="currentColor">
+                                <svg className="h-6 w-6 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                                 </svg>
                             </button>
@@ -69,34 +111,54 @@ const Layout = ({ children, houseName, onLogout }: {
                     <h2 className="text-2xl font-bold text-gray-800 mb-8">Menu</h2>
                     <nav className="flex flex-col space-y-4">
                         <Link href="/profile" onClick={() => setIsDrawerOpen(false)} className="flex items-center text-lg text-gray-700 hover:text-green-600 py-2 rounded-md hover:bg-gray-100">
-                            <svg className="h-6 w-6 mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
+                            {/* ... (Profile icon) ... */}
                             Profile
                         </Link>
 
                         <Link href="/settings" onClick={() => setIsDrawerOpen(false)} className="flex items-center text-lg text-gray-700 hover:text-green-600 py-2 rounded-md hover:bg-gray-100">
-                            <svg className="h-6 w-6 mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
+                            {/* ... (Settings icon) ... */}
                             Settings
                         </Link>
+
+                        {/* --- 3. Add the "Invite Code" button here --- */}
+                        <button
+                            onClick={handleInviteClick}
+                            className="flex items-center text-lg text-gray-700 hover:text-green-600 w-full text-left py-2 rounded-md hover:bg-gray-100"
+                        >
+                            <svg className="h-6 w-6 mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            </svg>
+                            Invite Code
+                        </button>
+                        <button
+                            onClick={handleCopyInviteLink}
+                            className="flex items-center text-lg text-gray-700 hover:text-green-600 w-full text-left py-2 rounded-md hover:bg-gray-100"
+                        >
+                            {/* (Link Icon) */}
+                            <svg className="h-6 w-6 mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.102 1.101" />
+                            </svg>
+                            Copy Invite Link
+                        </button>                        
+                        {/* --- End of new button --- */}
 
                         {onLogout && (
                             <button
                                 onClick={onLogout}
                                 className="flex items-center text-lg text-gray-700 hover:text-green-600 w-full text-left py-2 rounded-md hover:bg-gray-100"
                             >
-                                <svg className="h-6 w-6 mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                </svg>
+                                {/* ... (Sign Out icon) ... */}
                                 Sign Out
                             </button>
                         )}
                     </nav>
                 </div>
             </div>
+
+            {/* --- 4. Render the modal (it's invisible until state is true) --- */}
+            {isInviteModalOpen && (
+                <InviteCodeModal onClose={() => setIsInviteModalOpen(false)} />
+            )}
         </div>
     );
 };

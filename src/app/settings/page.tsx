@@ -132,7 +132,7 @@ export default function SettingsPage() {
 
             setShowGoodbye(true);
             setTimeout(() => setGoodbyeStep(2), 1500);
-            setTimeout(() => router.push('/onboarding-house'), 3500);
+            setTimeout(() => router.push('/'), 3500);
 
         } catch (err : unknown) {
             if (err instanceof Error) {

@@ -27,11 +27,11 @@ export default function OnboardingUserPage() {
     const [displayName, setDisplayName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState<string | undefined>();
     const router = useRouter();
-
+    const API_BASE_BACKEND = "http://localhost:8000"
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await fetch('http://localhost:8000/api/profile/update/', {
+            const response = await fetch(`${API_BASE_BACKEND}/api/profile/update/`, {
                 method: 'PATCH',
                 credentials: 'include',
                 headers: {
@@ -45,16 +45,47 @@ export default function OnboardingUserPage() {
             });
 
             if (response.ok) {
-                router.push('/onboarding-house');
+                // router.push('/onboarding-house');
+                console.log("successful profuile update from onboaring-user");
             } else {
                 const errorData = await response.json();
                 alert(`Error: ${JSON.stringify(errorData)}`);
             }
+            console.log("got the code boss",localStorage.getItem('pendingInviteCode'));
+            const pendingCode = localStorage.getItem('pendingInviteCode');
+
+            if (pendingCode) {
+                // AN INVITE CODE EXISTS! Let's use it.
+                const inviteResponse = await fetch(`${API_BASE_BACKEND}/api/houses/use-invite/`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
+                    body: JSON.stringify({ code: pendingCode })
+                });
+
+                if (inviteResponse.ok) {
+                    // Success! Remove the code and go to home
+                    localStorage.removeItem('pendingInviteCode');
+                    router.push('/home?new=true'); // <-- SKIP /onboarding-house
+                    return; // We are done here
+                } else {
+                    // Code was bad or expired.
+                    localStorage.removeItem('pendingInviteCode');
+                    alert("Your invite was invalid or expired. Please join a house manually.");
+                    // Fall through to the default redirect
+                }
+                
+            } 
+            
+            // NO PENDING INVITE: Go to the normal next step
+            console.log("no invite route");
+            router.push('/onboarding-house');
         } catch (error) {
             console.error("An error occurred during profile update:", error);
             alert("An unexpected error occurred.");
         }
     };
+    
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-center bg-green-50 p-8">

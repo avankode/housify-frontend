@@ -286,6 +286,72 @@ export default function QueuesPage(){
         }
     };
 
+    const handlePurchaseQueue = async (provider: string) => {
+        console.log(`Purchasing all items for provider: ${provider}`);
+        
+        const itemsToPurchase = queue.filter(item => item.provider === provider);
+        if (itemsToPurchase.length === 0) {
+            alert("No items to purchase for this provider.");
+            return;
+        }
+
+        const totalAmount = itemsToPurchase.reduce((sum, item) => {
+            return sum + (parseFloat(item.inventory_item.price) * item.quantity);
+        }, 0);
+
+        const details = itemsToPurchase.map(item => ({
+            name: item.inventory_item.name,
+            quantity: item.quantity
+        }));
+        
+        const dateString = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const expenseName = `${provider} - ${dateString}`;
+
+        const expensePayload = {
+            name: expenseName,
+            amount: totalAmount,
+            category: "GROCERIES",
+            date: new Date().toISOString(),
+            details: details,
+            is_recurring: false,
+        };
+
+        const baseUrl = 'http://localhost:8000';
+        const csrftoken = getCookie('csrftoken') || '';
+
+        try {
+            // --- STEP 1: CREATE THE EXPENSE ---
+            const expenseRes = await fetch(`${baseUrl}/api/expenses/`, {
+                method: 'POST',
+                credentials : 'include',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'X-CSRFToken': csrftoken 
+                },
+                body: JSON.stringify(expensePayload)
+            });
+
+            if (!expenseRes.ok) {
+                const errData = await expenseRes.json();
+                throw new Error(`Failed to create expense: ${JSON.stringify(errData)}`);
+            }
+            
+            console.log("Expense created successfully!");
+
+            // --- STEP 2: CLEAR THE PURCHASED ITEMS ---
+            await Promise.all(
+                itemsToPurchase.map(item => handleDeleteItem(item.id))
+            );
+            
+            console.log("Purchased items cleared from queue.");
+            alert("Purchase successful! Expense created in the Expenses tab.");
+
+        } catch (err: any) {
+            console.error("Failed during purchase process:", err);
+            alert(`Error: ${err.message}`);
+        }
+    };
+
     // const handleAddItemToQueue = (item: InventoryItem, quantity: number, provider: string) => {
     //     // Send the message over the WebSocket instead of setting local state
     //     if (ws) {
@@ -359,6 +425,7 @@ export default function QueuesPage(){
                     onDeleteItem={handleDeleteItem}
                     googleChatWebhook={GCHAT_WEBHOOK_URL}
                     onClearQueue={handleClearQueue}
+                    onPurchaseQueue={handlePurchaseQueue}
                 />
 
                 <AddItemModal

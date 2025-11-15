@@ -13,6 +13,7 @@ interface Props {
     onDeleteItem: (itemId: number) => void; // We use the string 'itemId'
     googleChatWebhook: string;
     onClearQueue: () => void; // Prop to clear the queue
+    onPurchaseQueue: (provider: string) => void;
 }
 
 // --- Helper Function ---
@@ -38,7 +39,7 @@ const calculateTotals = (queue: QueueItem[]) => {
 };
 
 // --- Main Component ---
-export default function QueueSection({ queue, onDeleteItem, googleChatWebhook, onClearQueue }: Props) {
+export default function QueueSection({ queue, onDeleteItem, googleChatWebhook, onClearQueue ,onPurchaseQueue }: Props) {
     const [buttonState, setButtonState] = useState({ text: 'Queue Ready', color: 'bg-gray-400', disabled: true });
     const [readyProviders, setReadyProviders] = useState<string[]>([]);
 
@@ -120,6 +121,20 @@ export default function QueueSection({ queue, onDeleteItem, googleChatWebhook, o
         return () => clearTimeout(timer);
     }, [buttonState.disabled, googleChatWebhook, queue,  readyProviders]); // Re-run if these change
 
+
+    const handleCheckoutClick = () => {
+        if (readyProviders.length === 0) return;
+        
+        if (readyProviders.length === 1) {
+            // This is the "BLINKIT IT!" state.
+            // Call the purchase function from the parent.
+            onPurchaseQueue(readyProviders[0]);
+        } else {
+            // This is the "READY" state (multiple providers)
+            onPurchaseQueue("Blinkit+Swiggy+Zepto Combined")
+        }
+    };
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Column 1 & 2: The Queue List */}
@@ -163,7 +178,7 @@ export default function QueueSection({ queue, onDeleteItem, googleChatWebhook, o
                     </div>
                 </div>
                 <button
-                    onClick={onClearQueue} // <-- The new onClick handler
+                    onClick={handleCheckoutClick} // <-- The new onClick handler
                     disabled={buttonState.disabled}
                     className={`w-full p-4 rounded-lg text-white font-bold text-xl transition-all duration-300 ${
                         buttonState.color
