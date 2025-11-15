@@ -6,6 +6,8 @@ import Link from 'next/link';
 import Image from 'next/image'; // This import is unused, your code uses <Image>
 import InviteCodeModal from './InviteCodeModal'; // Assuming it's in the same /components folder
 import { getCookie } from '../utils';
+import toast, { Toaster } from 'react-hot-toast';
+
 
 const Layout = ({ children, houseName, onLogout }: {
     children: React.ReactNode;
@@ -44,7 +46,7 @@ const Layout = ({ children, houseName, onLogout }: {
             console.log("this is the link ",inviteUrl);
             // 3. Copy to clipboard
             await navigator.clipboard.writeText(inviteUrl);
-            alert("Invite link copied to clipboard!"); // We can make this a nicer popup later
+            toast.success("Invite link copied to clipboard!");
             setIsDrawerOpen(false);
         } catch (err) {
             console.error("Error copying invite link:", err);
@@ -54,6 +56,7 @@ const Layout = ({ children, houseName, onLogout }: {
 
     return (
         <div className="min-h-screen w-full bg-green-50">
+            <Toaster position="top-center" />
             <header className="bg-white shadow-md">
                 <nav className="container mx-auto px-4 py-2">
                     <div className="grid grid-cols-3 items-center">
