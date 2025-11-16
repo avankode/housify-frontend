@@ -168,8 +168,7 @@ export default function QueuesPage(){
             // SUCCESS: Immediately re-fetch the queue to show the empty list
             console.log("Queue cleared successfully, fetching updated list.");
             await fetchQueue();
-
-        } catch (error) {
+        }catch (error) {
             console.error("Error clearing queue:", error);
             toast.error("Failed to clear the queue. Please try again.");
         }
@@ -233,7 +232,31 @@ export default function QueuesPage(){
             
             console.log("Purchased items cleared from queue.");
            toast.success("Purchase successful! Expense created.");
-
+            if(GCHAT_WEBHOOK_URL){
+                        const message = {
+            "cardsV2": [
+                {
+                    "cardId": "queue-ready-card",
+                    "card": {
+                        "header": {
+                            "title": `SOMEONE PLACED THE ORDER`,
+                            "subtitle": "CHECK WITH YOUR GANG",
+                            "imageUrl": "https://unsplash.com/photos/a-bunch-of-balloons-that-are-shaped-like-email-7NT4EDSI5Ok",
+                            "imageType": "CIRCLE"
+                        },
+                    }
+                }
+            ]
+        };
+            fetch(GCHAT_WEBHOOK_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json; charset=UTF-8" },
+            body: JSON.stringify(message),
+        })
+            .then(() => {
+                console.log(`✔ Notification sent for SOMEONE ORDERING`);
+            })
+            .catch(err => console.error(`Failed to notify THAT SOMEONE ORDERED`, err));}
         } catch (err: unknown) {
             console.error("Failed during purchase process:", err);
             if (err instanceof Error) {

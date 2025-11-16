@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import QueueItemTile from './QueueItemTile';
 import { QueueItem } from "./../../types"
 // --- Type Definitions ---
@@ -41,8 +41,32 @@ export default function QueueSection({ queue, onDeleteItem, googleChatWebhook,on
     const [buttonState, setButtonState] = useState({ text: 'Queue Ready', color: 'bg-gray-400', disabled: true });
     const [readyProviders, setReadyProviders] = useState<string[]>([]);
     const totals = calculateTotals(queue); // Pass inventory to helper
+    const notifiedProvidersRef = useRef<string[]>([]);
+    const previousQueueStateRef = useRef<string>('');
 
-    // --- Button Logic Effect ---
+    useEffect(() => {
+    const storedQueue = localStorage.getItem("lastQueueState");
+    if (storedQueue) previousQueueStateRef.current = storedQueue;
+
+    const storedProviders = localStorage.getItem("notifiedProviders");
+    if (storedProviders) {
+        try {
+            notifiedProvidersRef.current = JSON.parse(storedProviders);
+        } catch (e) {
+            console.error("Failed to parse notifiedProviders:", e);
+        }
+    }
+    }, []);
+        useEffect(() => {
+        if (queue.length === 0) {
+            localStorage.removeItem("lastQueueState");
+            localStorage.removeItem("notifiedProviders");
+
+            previousQueueStateRef.current = "";
+            notifiedProvidersRef.current = [];
+        }
+    }, [queue.length]);
+
     useEffect(() => {
         const newReadyProviders: string[] = [];
         if (totals.Blinkit > 150) newReadyProviders.push('Blinkit');
@@ -61,66 +85,95 @@ export default function QueueSection({ queue, onDeleteItem, googleChatWebhook,on
         } else {
             setButtonState({ text: 'READY', color: 'bg-black hover:bg-gray-800', disabled: false });
         }
-    }, [queue, totals.Blinkit, totals.Swiggy, totals.Zepto]); // Recalculate whenever the queue or inventory changes
+    }, [queue, totals.Blinkit, totals.Swiggy, totals.Zepto]); 
 
-    // --- Google Chat Notification Effect ---
-    useEffect(() => {
-        if (buttonState.disabled) {
-            return; // Do nothing if button is not active
-        }
+    
+useEffect(() => {
+    if (buttonState.disabled) return;
+    if (!googleChatWebhook) return;
 
-        const timer = setTimeout(() => {
-            if (!googleChatWebhook) {
-                console.warn("Google Chat Webhook URL is not set. Skipping notification.");
-                return;
-            }
-            console.log("Sending GChat notification...");
+    // Prepare a simplified snapshot of current queue
+    const currentSnapshot = JSON.stringify(
+        queue
+            .sort((a, b) => a.id - b.id)
+            .map(item => ({
+                id: item.id,
+                provider: item.provider,
+                quantity: item.quantity,
+                name: item.inventory_item.name
+            }))
+    );
 
-            readyProviders.forEach(provider => {
-                const itemsForProvider = queue
-                    .filter(item => item.provider === provider)
-                    .map(item => ({ 
-                        name: item.inventory_item.name,
-                        quantity: item.quantity
-                    }));
+    const previousSnapshot = previousQueueStateRef.current;
 
-                const message = {
-                    "cardsV2": [
-                        {
-                            "cardId": "queue-ready-card",
-                            "card": {
-                                "header": {
-                                    "title": `${provider.toUpperCase()} IT!`,
-                                    "subtitle": "Your Housify order is ready to be placed.",
-                                    "imageUrl": "https://i.imgur.com/x0R4sPz.png", // A generic cart icon
-                                    "imageType": "CIRCLE"
-                                },
-                                "sections": [
-                                    {
-                                        "widgets": itemsForProvider.map(item => ({
-                                            "textParagraph": {
-                                                "text": `<b>${item.name}</b> (x${item.quantity})`
-                                            }
-                                        }))
+    // If no change → do nothing
+    if (currentSnapshot === previousSnapshot) {
+        console.log("No change in queue; no notifications sent.");
+        return;
+    }
+
+    // Queue HAS changed — allow notifications again
+    notifiedProvidersRef.current = [];
+
+    // Store cleared providers list
+    localStorage.setItem("notifiedProviders", "[]");
+
+    // Determine which providers should notify
+    const providersToNotify = readyProviders;
+
+    if (providersToNotify.length === 0) return;
+
+    console.log("Queue changed → sending notifications...");
+
+    providersToNotify.forEach(provider => {
+        const itemsForProvider = queue
+            .filter(item => item.provider === provider)
+            .map(item => ({
+                name: item.inventory_item.name,
+                quantity: item.quantity
+            }));
+        console.log("total list right before sending" , itemsForProvider);
+        const message = {
+            "cardsV2": [
+                {
+                    "cardId": "queue-ready-card",
+                    "card": {
+                        "header": {
+                            "title": `${provider.toUpperCase()} IT NOW!`,
+                            "subtitle": "Your Housify order is ready to be placed.",
+                            "imageUrl": "https://i.imgur.com/x0R4sPz.png",
+                            "imageType": "CIRCLE"
+                        },
+                        "sections": [
+                            {
+                                "widgets": itemsForProvider.map(item => ({
+                                    "textParagraph": {
+                                        "text": `<b>${item.name}</b> (x${item.quantity})`
                                     }
-                                ]
+                                }))
                             }
-                        }
-                    ]
-                };
+                        ]
+                    }
+                }
+            ]
+        };
+if(itemsForProvider.length>0)
+{        fetch(googleChatWebhook, {
+            method: "POST",
+            headers: { "Content-Type": "application/json; charset=UTF-8" },
+            body: JSON.stringify(message)
+        })
+            .then(() => {
+                console.log(`✔ Notification sent for ${provider}`);
+            })
+            .catch(err => console.error(`Failed to notify ${provider}:`, err));}
+    });
 
-                // Send the webhook
-                fetch(googleChatWebhook, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-                    body: JSON.stringify(message),
-                }).catch(err => console.error(`Failed to send GChat notification for ${provider}:`, err));
-            });
-        }, 5*1000 /*3 * 60 * 1000*/); // 3 minutes
+    // After all notifications done → store new queue state
+    previousQueueStateRef.current = currentSnapshot;
+    localStorage.setItem("lastQueueState", currentSnapshot);
 
-        // VERY IMPORTANT: Cancel the timer if the button state changes
-        return () => clearTimeout(timer);
-    }, [buttonState.disabled, googleChatWebhook, queue,  readyProviders]); // Re-run if these change
+}, [queue, readyProviders, buttonState.disabled, googleChatWebhook]); // Re-run if these change
 
 
     const handleCheckoutClick = () => {
