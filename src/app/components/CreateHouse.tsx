@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_BACKEND, getCookie } from '../utils';
 import { useRouter } from 'next/navigation'; // NEW: Import the router
+import toast from 'react-hot-toast';
 
 interface CreateHouseProps {
     showDashboardView: () => void;
@@ -79,11 +80,11 @@ const CreateHouse = ({ showDashboardView }: CreateHouseProps) => {
             } else {
                 // You can add more specific error handling here later
                 console.error("Failed to create house:", data);
-                alert(`Error: ${data.name || 'Could not create house.'}`);
+                toast.error(`Error: ${data.name || 'Could not create house.'}`);
             }
         } catch (error) {
             console.error("An error occurred during house creation:", error);
-            alert("An unexpected error occurred. Please try again.");
+            toast.error("An unexpected error occurred. Please try again.");
         }
     };
 

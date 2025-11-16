@@ -8,6 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useInView } from 'react-intersection-observer'; 
 import Layout from '../components/Layout';
 import { API_BASE_BACKEND, getCookie } from '../utils'; // We still need this for POST requests
+import toast from 'react-hot-toast';
 
 
 interface UserWhoPaid {
@@ -76,7 +77,7 @@ const fetcher = (url: string) => {
 // --- Timezone Helper (Unchanged) ---
 const getMonthUTCEdges = (date: Date|null) => {
     if (date === null){
-        alert("date cannot be null");
+        toast.error("date cannot be null");
         return;
     }
     const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);

@@ -7,6 +7,7 @@ import img from "next/image";
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
 import { API_BASE_BACKEND } from '../utils';
+import toast from 'react-hot-toast';
 
 // Helper function to get the CSRF token
 const getCookie = (name: string) => {
@@ -49,7 +50,7 @@ export default function OnboardingUserPage() {
                 console.log("successful profuile update from onboaring-user");
             } else {
                 const errorData = await response.json();
-                alert(`Error: ${JSON.stringify(errorData)}`);
+                toast.error(`Error: ${JSON.stringify(errorData)}`);
             }
             console.log("got the code boss",localStorage.getItem('pendingInviteCode'));
             const pendingCode = localStorage.getItem('pendingInviteCode');
@@ -71,7 +72,7 @@ export default function OnboardingUserPage() {
                 } else {
                     // Code was bad or expired.
                     localStorage.removeItem('pendingInviteCode');
-                    alert("Your invite was invalid or expired. Please join a house manually.");
+                    toast.error("Your invite was invalid or expired. Please join a house manually.");
                     // Fall through to the default redirect
                 }
                 
@@ -82,7 +83,7 @@ export default function OnboardingUserPage() {
             router.push('/onboarding-house');
         } catch (error) {
             console.error("An error occurred during profile update:", error);
-            alert("An unexpected error occurred.");
+            toast.error("An unexpected error occurred.");
         }
     };
     

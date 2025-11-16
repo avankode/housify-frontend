@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import img from "next/image";
 import { useRouter } from 'next/navigation'; // NEW: Import the router
 import { API_BASE_BACKEND } from '../utils';
+import toast from 'react-hot-toast';
 
 const getCookie = (name: string) => {
     let cookieValue = null;
@@ -51,7 +52,7 @@ const JoinHouse = ({ showDashboardView }: JoinHouseProps) => {
         const fullOtp = otp.join('');
 
         if (fullOtp.length !== 6) {
-            alert('Please enter a complete 6-digit code.');
+            toast.error('Please enter a complete 6-digit code.');
             return;
         }
 
@@ -74,11 +75,11 @@ const JoinHouse = ({ showDashboardView }: JoinHouseProps) => {
             if (response.ok) {
                 router.push('/home?new=true');
             } else {
-                alert(`Error: ${data.error || 'Failed to join house'}`);
+                toast.error(`Error: ${data.error || 'Failed to join house'}`);
             }
         } catch (error) {
             console.error("Error joining house:", error);
-            alert("An error occurred. Please check the console.");
+            toast.error("An error occurred. Please check the console.");
         }
     };
 

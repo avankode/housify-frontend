@@ -4,6 +4,7 @@
 
 import React, { useState } from 'react';
 import { API_BASE_BACKEND, getCookie, User } from '../utils'; // Import from utils
+import toast from 'react-hot-toast';
 
 const Dashboard = ({ user, showCreateHouseView, showJoinHouseView, onLogout }: {
     user: User;
@@ -23,7 +24,7 @@ const Dashboard = ({ user, showCreateHouseView, showJoinHouseView, onLogout }: {
             if (response.ok) {
                 onLogout();
             } else {
-                alert("Logout failed. Please try again.");
+                toast.error("Logout failed. Please try again.");
             }
         } catch (error) {
             console.error("Error during logout:", error);

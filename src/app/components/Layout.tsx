@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import img from 'next/image'; // This import is unused, your code uses <img>
 import InviteCodeModal from './InviteCodeModal'; // Assuming it's in the same /components folder
-import { API_BASE_BACKEND, getCookie } from '../utils';
+import { API_BASE_BACKEND, API_BASE_FRONTEND, getCookie } from '../utils';
 import toast, { Toaster } from 'react-hot-toast';
 
 
@@ -48,7 +48,7 @@ const Layout = ({ children, houseName, onLogout }: {
             setIsDrawerOpen(false);
         } catch (err) {
             console.error("Error copying invite link:", err);
-            alert("Could not generate invite link. Are you the admin?");
+            toast.error("Could not generate invite link. Are you the admin?");
         }
     };
 

@@ -180,7 +180,7 @@ export default function QueuesPage(){
         
         const itemsToPurchase = queue.filter(item => item.provider === provider);
         if (itemsToPurchase.length === 0) {
-            alert("No items to purchase for this provider.");
+            toast.error("No items to purchase for this provider.");
             return;
         }
 

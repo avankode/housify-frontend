@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { API_BASE_BACKEND, getCookie } from '../utils';
 import img from "next/image";
 import { useUser } from '../context/UserContext';
+import toast from 'react-hot-toast';
 
 // --- Child Component: CreateHouse ---
 // This is the component you provided, with a few modifications.
@@ -65,11 +66,11 @@ const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
                 // UPDATED: The component now handles its own redirect.
                 router.push('/home?new=true');
             } else {
-                alert(`Error: ${data.name || 'Could not create house.'}`);
+                toast.error(`Error: ${data.name || 'Could not create house.'}`);
             }
         } catch (error) {
             console.error("An error occurred during house creation:", error);
-            alert("An unexpected error occurred.");
+            toast.error("An unexpected error occurred.");
         }
     };
 
@@ -125,7 +126,7 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
         event.preventDefault();
         const fullOtp = otp.join('');
         if (fullOtp.length !== 6) {
-            alert('Please enter a complete 6-digit code.');
+            toast.error('Please enter a complete 6-digit code.');
             return;
         }
         try {
@@ -140,11 +141,11 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
                 // UPDATED: The component now handles its own redirect.
                 router.push('/home?new=true');
             } else {
-                alert(`Error: ${data.error || 'Failed to join house'}`);
+                toast.error(`Error: ${data.error || 'Failed to join house'}`);
             }
         } catch (error) {
             console.error("Error joining house:", error);
-            alert("An error occurred.");
+            toast.error("An error occurred.");
         }
     };
 
@@ -192,7 +193,7 @@ export default function OnboardingHousePage() {
                 const token = getCookie('csrftoken');
                 if (!token) {
                     // This should not happen if they just logged in
-                    alert("Authentication error. Please log in again.");
+                    toast.error("Authentication error. Please log in again.");
                     localStorage.removeItem('pendingInviteCode');
                     setView('CHOICE');
                     return;
@@ -218,12 +219,12 @@ export default function OnboardingHousePage() {
                         const data = await response.json();
                         localStorage.removeItem('pendingInviteCode');
                         setView('CHOICE'); // Show them the normal page
-                        alert(`Invite Error: ${data.error || "Invalid or expired."}`);
+                        toast.error(`Invite Error: ${data.error || "Invalid or expired."}`);
                     }
                 } catch (err) {
                     console.log("join with code gave an error",err);
                     setView('CHOICE');
-                    alert("An error occurred while joining.");
+                    toast.error("An error occurred while joining.");
                 }
             };
             

@@ -16,13 +16,10 @@ interface Props {
     onPurchaseQueue: (provider: string) => void;
 }
 
-// --- Helper Function ---
-// Calculates totals for each provider
+
 const calculateTotals = (queue: QueueItem[]) => {
     const totals = { Blinkit: 0, Swiggy: 0, Zepto: 0, overall: 0 };
 
-    // Create a quick lookup map for prices
-    // const priceMap = new Map(inventory.map(item => [item.id, parseFloat(item.price)]));
 
     queue.forEach(item => {
         // Access nested price directly
@@ -38,11 +35,11 @@ const calculateTotals = (queue: QueueItem[]) => {
     return totals;
 };
 
+
 // --- Main Component ---
 export default function QueueSection({ queue, onDeleteItem, googleChatWebhook,onPurchaseQueue }: Props) {
     const [buttonState, setButtonState] = useState({ text: 'Queue Ready', color: 'bg-gray-400', disabled: true });
     const [readyProviders, setReadyProviders] = useState<string[]>([]);
-
     const totals = calculateTotals(queue); // Pass inventory to helper
 
     // --- Button Logic Effect ---
@@ -119,7 +116,7 @@ export default function QueueSection({ queue, onDeleteItem, googleChatWebhook,on
                     body: JSON.stringify(message),
                 }).catch(err => console.error(`Failed to send GChat notification for ${provider}:`, err));
             });
-        },  3 * 6 * 1000); // 3 minutes
+        }, 5*1000 /*3 * 60 * 1000*/); // 3 minutes
 
         // VERY IMPORTANT: Cancel the timer if the button state changes
         return () => clearTimeout(timer);
