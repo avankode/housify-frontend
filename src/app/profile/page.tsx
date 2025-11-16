@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { UserWithHouse } from '../utils';
+import { API_BASE_BACKEND, UserWithHouse } from '../utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // Import the router hook
-import Image from "next/image";
+import img from "next/image";
 
 export default function ProfilePage() {
     const [user, setUser] = useState<UserWithHouse | null>(null);
@@ -15,7 +15,7 @@ export default function ProfilePage() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch('http://localhost:8000/api/user/', {
+                const response = await fetch(`${API_BASE_BACKEND}/api/user/`, {
                     credentials: 'include',
                 });
                 if (!response.ok) {
@@ -59,8 +59,8 @@ export default function ProfilePage() {
             <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
                 <div className="p-8">
                     <div className="text-center">
-                        <Image
-                            src={`http://localhost:8000${user.profile.profile_photo}`}
+                        <img
+                            src={`${API_BASE_BACKEND}${user.profile.profile_photo}`}
                             alt="Profile"
                             className="w-32 h-32 rounded-full mx-auto border-4 border-green-200"
                         />

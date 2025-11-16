@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { getCookie } from '../utils';
-import Image from "next/image";
+import { API_BASE_BACKEND, getCookie } from '../utils';
+import img from "next/image";
 import { useUser } from '../context/UserContext';
 
 // --- Child Component: CreateHouse ---
 // This is the component you provided, with a few modifications.
-const API_BASE_BACKEND = 'http://localhost:8000';
+
 const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
     const [houseName, setHouseName] = useState('');
     const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -25,7 +25,7 @@ const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
         setIsSuggesting(true);
         setSuggestionError(false);
         const handler = setTimeout(() => {
-            fetch('http://localhost:8000/api/houses/suggest-name/', {
+            fetch(`${API_BASE_BACKEND}/api/houses/suggest-name/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
@@ -54,7 +54,7 @@ const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await fetch('http://localhost:8000/api/houses/create/', {
+            const response = await fetch(`${API_BASE_BACKEND}/api/houses/create/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
@@ -129,7 +129,7 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
             return;
         }
         try {
-            const response = await fetch('http://localhost:8000/api/houses/use-invite/', {
+            const response = await fetch(`${API_BASE_BACKEND}/api/houses/use-invite/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
@@ -151,7 +151,7 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
     return (
         <div className="w-full max-w-md rounded-2xl bg-black p-8 text-center shadow-xl text-white">
             <div className="flex justify-center mb-6">
-                <Image src="/lock_icon.png" alt="Lock Icon" className="w-16 h-16" />
+                <img src="/lock_icon.png" alt="Lock Icon" className="w-16 h-16" />
             </div>
             <h1 className="mb-2 text-3xl font-bold">Enter your Verification Code</h1>
             <p className="mb-8 text-gray-400">Ask your House admin for the code!</p>
@@ -252,7 +252,7 @@ export default function OnboardingHousePage() {
             default:
                 return (
                     <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl">
-                        <Image src="/logo.png" alt="Housify Logo" width={160} height={220} className="mx-auto mb-1" />
+                        <img src="/logo.png" alt="Housify Logo" width={160} height={220} className="mx-auto mb-1" />
                         <h1 className="mb-4 text-3xl font-bold text-gray-800">Welcome to Housify!</h1>
                         <p className="mb-8 text-gray-600">You&apos;re not part of a house yet. Get started by creating or joining one.</p>
                         <div className="space-y-4">

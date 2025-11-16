@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { UserWithHouse } from '../utils';
+import { API_BASE_BACKEND, UserWithHouse } from '../utils';
 import Link from 'next/link';
 import {getCookie} from "@/src/app/utils";
-import Image from "next/image";
+import img from "next/image";
 
 // --- Reusable UI Components ---
 
@@ -53,7 +53,7 @@ export default function SettingsPage() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch('http://localhost:8000/api/user/', { credentials: 'include' });
+                const response = await fetch(`${API_BASE_BACKEND}/api/user/`, { credentials: 'include' });
                 if (!response.ok) throw new Error('Failed to fetch user data.');
                 const data = await response.json();
                 setUser(data);
@@ -123,7 +123,7 @@ export default function SettingsPage() {
 
     const handleLeaveHouse = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/houses/leave/', {
+            const response = await fetch(`${API_BASE_BACKEND}/api/houses/leave/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'X-CSRFToken': getCookie('csrftoken') || '' },
@@ -149,7 +149,7 @@ export default function SettingsPage() {
             return;
         }
         try {
-            const response = await fetch('http://localhost:8000/api/houses/delete/', {
+            const response = await fetch(`${API_BASE_BACKEND}/api/houses/delete/`, {
                 method: 'DELETE',
                 credentials: 'include',
                 headers: { 'X-CSRFToken': getCookie('csrftoken') || '' },
@@ -169,7 +169,7 @@ export default function SettingsPage() {
     const handleTransferAdmin = async () => {
         if (!selectedMemberId) return;
         try {
-            const response = await fetch('http://localhost:8000/api/houses/transfer-admin/', {
+            const response = await fetch(`${API_BASE_BACKEND}/api/houses/transfer-admin/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -298,7 +298,7 @@ export default function SettingsPage() {
                             onClick={() => setSelectedMemberId(member.id)}
                             className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${selectedMemberId === member.id ? 'bg-green-100 border-green-400 border' : 'hover:bg-gray-100'}`}
                         >
-                            <Image src={member.profile_photo_url} alt={member.display_name} className="w-10 h-10 rounded-full mr-4" />
+                            <img src={member.profile_photo_url} alt={member.display_name} className="w-10 h-10 rounded-full mr-4" />
                             <span className="font-semibold">{member.display_name}</span>
                         </div>
                     ))}

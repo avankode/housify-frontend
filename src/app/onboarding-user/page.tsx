@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import Image from "next/image";
+import img from "next/image";
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
+import { API_BASE_BACKEND } from '../utils';
 
 // Helper function to get the CSRF token
 const getCookie = (name: string) => {
@@ -27,7 +28,6 @@ export default function OnboardingUserPage() {
     const [displayName, setDisplayName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState<string | undefined>();
     const router = useRouter();
-    const API_BASE_BACKEND = "http://localhost:8000"
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
@@ -90,7 +90,7 @@ export default function OnboardingUserPage() {
     return (
         <main className="flex min-h-screen flex-col items-center justify-center bg-green-50 p-8">
             <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl">
-                <Image src="/logo.png" alt="Housify Logo" width={160} height={220} className="mx-auto mb-1" />
+                <img src="/logo.png" alt="Housify Logo" width={160} height={220} className="mx-auto mb-1" />
                 <h1 className="mb-2 text-3xl font-bold text-gray-800">Welcome to Housify!</h1>
                 <p className="mb-8 text-gray-600">Let&apos;s get your profile set up.</p>
 

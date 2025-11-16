@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { getCookie, User } from '../utils'; // Import from utils
+import { API_BASE_BACKEND, getCookie, User } from '../utils'; // Import from utils
 
 const Dashboard = ({ user, showCreateHouseView, showJoinHouseView, onLogout }: {
     user: User;
@@ -15,7 +15,7 @@ const Dashboard = ({ user, showCreateHouseView, showJoinHouseView, onLogout }: {
 
     const handleLogoutConfirm = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/logout/', {
+            const response = await fetch(`${API_BASE_BACKEND}/api/logout/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'X-CSRFToken': getCookie('csrftoken') || '' },

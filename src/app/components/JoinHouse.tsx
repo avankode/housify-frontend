@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
-import Image from "next/image";
+import img from "next/image";
 import { useRouter } from 'next/navigation'; // NEW: Import the router
+import { API_BASE_BACKEND } from '../utils';
 
 const getCookie = (name: string) => {
     let cookieValue = null;
@@ -57,7 +58,7 @@ const JoinHouse = ({ showDashboardView }: JoinHouseProps) => {
         console.log("Attempting to join house with code:", fullOtp);
 
         try {
-            const response = await fetch('http://localhost:8000/api/houses/use-invite/', {
+            const response = await fetch(`${API_BASE_BACKEND}/api/houses/use-invite/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -84,7 +85,7 @@ const JoinHouse = ({ showDashboardView }: JoinHouseProps) => {
     return (
         <div className="w-full max-w-md rounded-2xl bg-black p-8 text-center shadow-xl text-white">
             <div className="flex justify-center mb-6">
-                <Image src="/lock_icon.png" alt="Lock Icon" className="w-16 h-16" />
+                <img src="/lock_icon.png" alt="Lock Icon" className="w-16 h-16" />
             </div>
             <h1 className="mb-2 text-3xl font-bold">Enter your Verification Code</h1>
             <p className="mb-8 text-gray-400">Ask your House admin for the code!</p>

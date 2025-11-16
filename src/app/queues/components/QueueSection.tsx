@@ -11,7 +11,7 @@ import { QueueItem } from "./../../types"
 interface Props {
     queue: QueueItem[];
     onDeleteItem: (itemId: number) => void; // We use the string 'itemId'
-    googleChatWebhook: string;
+    googleChatWebhook: string | null ;
     onClearQueue: () => void; // Prop to clear the queue
     onPurchaseQueue: (provider: string) => void;
 }
@@ -73,12 +73,16 @@ export default function QueueSection({ queue, onDeleteItem, googleChatWebhook,on
         }
 
         const timer = setTimeout(() => {
+            if (!googleChatWebhook) {
+                console.warn("Google Chat Webhook URL is not set. Skipping notification.");
+                return;
+            }
             console.log("Sending GChat notification...");
 
             readyProviders.forEach(provider => {
                 const itemsForProvider = queue
                     .filter(item => item.provider === provider)
-                    .map(item => ({ // Access nested name directly
+                    .map(item => ({ 
                         name: item.inventory_item.name,
                         quantity: item.quantity
                     }));
@@ -91,7 +95,7 @@ export default function QueueSection({ queue, onDeleteItem, googleChatWebhook,on
                                 "header": {
                                     "title": `${provider.toUpperCase()} IT!`,
                                     "subtitle": "Your Housify order is ready to be placed.",
-                                    "imageUrl": "https://i.Imageur.com/x0R4sPz.png", // A generic cart icon
+                                    "imageUrl": "https://i.imgur.com/x0R4sPz.png", // A generic cart icon
                                     "imageType": "CIRCLE"
                                 },
                                 "sections": [
@@ -115,7 +119,7 @@ export default function QueueSection({ queue, onDeleteItem, googleChatWebhook,on
                     body: JSON.stringify(message),
                 }).catch(err => console.error(`Failed to send GChat notification for ${provider}:`, err));
             });
-        }, 3 * 60 * 1000); // 3 minutes
+        },  3 * 6 * 1000); // 3 minutes
 
         // VERY IMPORTANT: Cancel the timer if the button state changes
         return () => clearTimeout(timer);

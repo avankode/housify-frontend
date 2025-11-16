@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import Image from "next/image";
+import img from "next/image";
 
 interface InventoryItem {
     id: number;
@@ -42,7 +42,7 @@ export default function AddItemModal({item , onClose , onAddItem} : Props) {
                     <button onClick={onClose} className="text-gray-500 hover:text-gray-800">&times;</button>
                 </div>
 
-                <Image src={item.image_url} alt={item.name} className="w-full h-48 object-contain mb-4 rounded" />
+                <img src={item.image_url} alt={item.name} className="w-full h-48 object-contain mb-4 rounded" />
 
                 <p className="text-xl font-semibold text-gray-800 mb-4">Price: ₹{item.price}</p>
 

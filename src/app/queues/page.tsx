@@ -7,11 +7,12 @@ import Layout from '../components/Layout';
 import AddItemModal from './components/AddItemModal';
 import InventoryCarousel from "./components/InventoryCarousel";
 import QueueSection from './components/QueueSection';
-import { getCookie } from '../utils';
+import { API_BASE_BACKEND, getCookie } from '../utils';
 import { InventoryItem, QueueItem } from "./../types"
+import toast from 'react-hot-toast';
 
-// const WEBSOCKET_URL =  "wss://b97d2i3ahb.execute-api.eu-north-1.amazonaws.com/prod/"
-const GCHAT_WEBHOOK_URL = 'https://chat.googleapis.com/v1/spaces/AAQAWmRZiB0/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=h0XZcVNAJl3PbWEyIrgWOBO9no9Q0AH8Sa38AALFEQE';
+
+const GCHAT_WEBHOOK_URL = process.env.NEXT_PUBLIC_GCHAT_WEBHOOK_URL;
 export default function QueuesPage(){
     const { user, isLoading: isUserLoading } = useUser()
     const router = useRouter();
@@ -20,9 +21,6 @@ export default function QueuesPage(){
     const [queue, setQueue] = useState<QueueItem[]>([]);
     const [isDataLoading, setIsDataLoading] = useState(true);
 
-    // const [ws, setWs] = useState<WebSocket | null>(null);
-    // const [presenceCount, setPresenceCount] = useState(0);
-
     const [searchTerm, setSearchTerm] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
@@ -30,7 +28,7 @@ export default function QueuesPage(){
     const fetchQueue = useCallback(async () => {
         if (!user || !user.house) return; // Don't fetch if no user/house
         try {
-            const queueRes = await fetch('http://localhost:8000/api/queues/', { credentials: 'include' });
+            const queueRes = await fetch(`${API_BASE_BACKEND}/api/queues/`, { credentials: 'include' });
             if (!queueRes.ok) throw new Error('Failed to fetch queue');
             const queueData = await queueRes.json();
             setQueue(queueData);
@@ -45,7 +43,7 @@ export default function QueuesPage(){
                 setIsDataLoading(true);
                 try {
                     // Fetch inventory only once
-                    const inventoryRes = await fetch('http://localhost:8000/api/inventory/', { credentials: 'include' });
+                    const inventoryRes = await fetch(`${API_BASE_BACKEND}/api/inventory/`, { credentials: 'include' });
                     if (!inventoryRes.ok) throw new Error('Failed to fetch inventory');
                     const inventoryData = await inventoryRes.json();
                     setInventory(inventoryData);
@@ -69,6 +67,7 @@ export default function QueuesPage(){
             console.log("Starting 30-second poll for queue...");
             const intervalId = setInterval(() => {
                 console.log("Polling for queue updates...");
+
                 fetchQueue();
             }, 30000); // 30,000 milliseconds = 30 seconds
 
@@ -80,119 +79,9 @@ export default function QueuesPage(){
         }
     }, [isDataLoading, user, fetchQueue]);
 
-    // useEffect(() => {
-    //     if (!isUserLoading && user && user.house) {
-    //
-    //         // 1. Fetch the initial data (inventory + current queue)
-    //         const fetchData = async () => {
-    //             try {
-    //                 const [inventoryRes, queueRes] = await Promise.all([
-    //                     fetch('http://localhost:8000/api/inventory/', { credentials: 'include' }),
-    //                     fetch('http://localhost:8000/api/queues/', { credentials: 'include' })
-    //                 ]);
-    //                 if (!inventoryRes.ok || !queueRes.ok) throw new Error('Failed to fetch data');
-    //
-    //                 const inventoryData = await inventoryRes.json();
-    //                 const queueData = await queueRes.json(); // This is from Django REST, not Lambda
-    //
-    //                 setInventory(inventoryData);
-    //                 // Note: This initial queueData from Django might be a different format.
-    //                 // For now, we assume it's empty and let the WebSocket populate it.
-    //                 // A more robust solution would be to use the AWS queue data from the start.
-    //                 // Let's just fetch inventory.
-    //                 setQueue([]); // Start with an empty queue, let WebSocket populate
-    //             } catch (error) {
-    //                 console.error("Error fetching inventory data:", error);
-    //             } finally {
-    //                 setIsDataLoading(false);
-    //             }
-    //         };
-    //         fetchData(); // Fetch the inventory
-    //
-    //         // 2. Establish the WebSocket connection
-    //         const socketUrl = `${WEBSOCKET_URL}?houseId=${user.house.id}`;
-    //         const socket = new WebSocket(socketUrl);
-    //
-    //         socket.onopen = () => {
-    //             console.log("WebSocket connected!");
-    //             setWs(socket);
-    //             socket.send(JSON.stringify({ action: 'getQueue' }));
-    //         };
-    //
-    //         // 3. This is the main listener
-    //         socket.onmessage = (event) => {
-    //             const data = JSON.parse(event.data);
-    //
-    //             if (data.action === 'queueUpdate') {
-    //                 console.log("Received new queue from server!");
-    //                 setQueue(data.queue); // Server sends the full new queue
-    //             }
-    //
-    //             if (data.action === 'presenceUpdate') {
-    //                 console.log("Presence updated:", data.count);
-    //                 setPresenceCount(data.count);
-    //             }
-    //         };
-    //
-    //         socket.onclose = () => {
-    //             console.log("WebSocket disconnected.");
-    //             setWs(null);
-    //             // We could add auto-reconnect logic here
-    //         };
-    //
-    //         socket.onerror = (err) => {
-    //             console.error("WebSocket Error:", err);
-    //         };
-    //
-    //         // 4. Clean up the connection when the component unmounts
-    //         return () => {
-    //             console.log("Closing WebSocket connection...");
-    //             socket.close();
-    //         };
-    //     }
-    // }, [isUserLoading, user]); // Only runs when user is loaded
     if (isUserLoading || isDataLoading) {
         return <main className="flex min-h-screen items-center justify-center bg-green-50"><p>Loading Queues...</p></main>;
     }
-    // if (isUserLoading || (isDataLoading && inventory.length === 0)) {
-    //     return <main className="flex min-h-screen items-center justify-center bg-green-50"><p>Loading Queues...</p></main>;
-    // }
-
-
-    // useEffect(() => {
-    //     if (!isUserLoading && user && user.house){
-    //
-    //         const fetchData = async () => {
-    //             try {
-    //                 // Fetch both endpoints at the same time
-    //                 const [inventoryRes, queueRes] = await Promise.all([
-    //                     fetch('http://localhost:8000/api/inventory/', {credentials: 'include'}),
-    //                     fetch('http://localhost:8000/api/queues/', {credentials: 'include'})
-    //                 ]);
-    //
-    //                 if (!inventoryRes.ok || !queueRes.ok) {
-    //                     throw new Error('Failed to fetch data');
-    //                 }
-    //
-    //                 const inventoryData = await inventoryRes.json();
-    //                 const queueData = await queueRes.json();
-    //
-    //                 setInventory(inventoryData);
-    //                 setQueue(queueData);
-    //             } catch (error) {
-    //             console.error("Erorr in side queues page , while trying to fetch inventory HERE IT IS ::::::",error);
-    //             // lets add a toast error and handle the error here
-    //             } finally {
-    //                 setIsDataLoading(false);
-    //             }
-    //         };
-    //         fetchData();
-    //     }
-    // } ,[isUserLoading , user]);
-
-    // if (isUserLoading || (isDataLoading && inventory.length === 0)) {
-    //     return <main className="flex min-h-screen items-center justify-center bg-green-50"><p>Loading Queues...</p></main>;
-    // }
     if (!user) {
         router.push('/error-session');
         return null;
@@ -214,7 +103,7 @@ export default function QueuesPage(){
     const handleAddItemToQueue = async (item: InventoryItem, quantity: number, provider: string) => {
         console.log("Adding item via API:", item.name, quantity, provider);
         try {
-            const response = await fetch('http://localhost:8000/api/queues/add/', {
+            const response = await fetch(`${API_BASE_BACKEND}/api/queues/add/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -234,7 +123,7 @@ export default function QueuesPage(){
             await fetchQueue();
         } catch (error) {
             console.error("Error adding item:", error);
-            alert("Failed to add item. Please try again.");
+            toast.error("Failed to add item. Please try again.");
         }
     };
 
@@ -242,7 +131,7 @@ export default function QueuesPage(){
     const handleDeleteItem = async (id: number) => { // The ID is now a number
         console.log("Deleting item via API:", id);
         try {
-            const response = await fetch(`http://localhost:8000/api/queues/${id}/delete/`, {
+            const response = await fetch(`${API_BASE_BACKEND}/api/queues/${id}/delete/`, {
                 method: 'DELETE',
                 credentials: 'include',
                 headers: {
@@ -256,13 +145,13 @@ export default function QueuesPage(){
             await fetchQueue();
         } catch (error) {
             console.error("Error deleting item:", error);
-            alert("Failed to delete item. Please try again.");
+            toast.error("Failed to delete item. Please try again.");
         }
     };
     const handleClearQueue = async () => {
         console.log("Clearing queue via API...");
         try {
-            const response = await fetch('http://localhost:8000/api/queues/clear/', {
+            const response = await fetch(`${API_BASE_BACKEND}/api/queues/clear/`, {
                 method: 'POST', // Or 'DELETE' if you prefer, backend handles POST
                 credentials: 'include',
                 headers: {
@@ -282,7 +171,7 @@ export default function QueuesPage(){
 
         } catch (error) {
             console.error("Error clearing queue:", error);
-            alert("Failed to clear the queue. Please try again.");
+            toast.error("Failed to clear the queue. Please try again.");
         }
     };
 
@@ -316,12 +205,11 @@ export default function QueuesPage(){
             is_recurring: false,
         };
 
-        const baseUrl = 'http://localhost:8000';
         const csrftoken = getCookie('csrftoken') || '';
 
         try {
             // --- STEP 1: CREATE THE EXPENSE ---
-            const expenseRes = await fetch(`${baseUrl}/api/expenses/`, {
+            const expenseRes = await fetch(`${API_BASE_BACKEND}/api/expenses/`, {
                 method: 'POST',
                 credentials : 'include',
                 headers: { 
@@ -344,57 +232,17 @@ export default function QueuesPage(){
             );
             
             console.log("Purchased items cleared from queue.");
-            alert("Purchase successful! Expense created in the Expenses tab.");
+           toast.success("Purchase successful! Expense created.");
 
         } catch (err: unknown) {
             console.error("Failed during purchase process:", err);
             if (err instanceof Error) {
-                alert(`Error: ${err.message}`);
+                toast.error(`Error: ${err.message}`);
             } else {
-                alert("An unknown error occurred.");
+                toast.error("An unknown error occurred.");
             }
         }
     };
-
-    // const handleAddItemToQueue = (item: InventoryItem, quantity: number, provider: string) => {
-    //     // Send the message over the WebSocket instead of setting local state
-    //     if (ws) {
-    //         ws.send(JSON.stringify({
-    //             action: 'addItem',
-    //             item_id: item.id, // This is the inventoryItemId
-    //             quantity: quantity,
-    //             provider: provider
-    //             // We pass the other details needed by the Lambda
-    //         }));
-    //     } else {
-    //         console.error("WebSocket is not connected.");
-    //     }
-    // };
-    //
-    // const handleDeleteItem = (itemId: string) => { // 'itemId' is the unique queue ID
-    //     // Send the delete message
-    //     if (ws) {
-    //         ws.send(JSON.stringify({
-    //             action: 'deleteItem',
-    //             item_id: itemId
-    //         }));
-    //     } else {
-    //         console.error("WebSocket is not connected.");
-    //     }
-    // };
-    //
-    // const handleClearQueue = () => {
-    //     console.log("Sending clearQueue message...");
-    //     if (ws) {
-    //         ws.send(JSON.stringify({
-    //             action: 'clearQueue'
-    //         }));
-    //     } else {
-    //         console.error("WebSocket is not connected.");
-    //     }
-    // };
-
-    // --- Derived State (for filtering) ---
     const filteredInventory = inventory.filter(item =>
         item.name.toLowerCase().startsWith(searchTerm.toLowerCase())
     );
@@ -427,7 +275,7 @@ export default function QueuesPage(){
                 <QueueSection
                     queue={queue}
                     onDeleteItem={handleDeleteItem}
-                    googleChatWebhook={GCHAT_WEBHOOK_URL}
+                    googleChatWebhook={GCHAT_WEBHOOK_URL||null}
                     onClearQueue={handleClearQueue}
                     onPurchaseQueue={handlePurchaseQueue}
                 />

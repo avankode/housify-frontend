@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { getCookie } from '../utils';
+import { API_BASE_BACKEND, getCookie } from '../utils';
 
 
 // This component expects one prop: a function to call when it should close.
@@ -25,7 +25,7 @@ export default function InviteCodeModal({ onClose }: InviteCodeModalProps) {
 
 
             try {
-                const response = await fetch(`http://localhost:8000/api/houses/create-invite/`, {
+                const response = await fetch(`${API_BASE_BACKEND}/api/houses/create-invite/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },

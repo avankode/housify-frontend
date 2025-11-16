@@ -3,9 +3,9 @@
 // --- 1. Import your new modal component ---
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image'; // This import is unused, your code uses <Image>
+import img from 'next/image'; // This import is unused, your code uses <img>
 import InviteCodeModal from './InviteCodeModal'; // Assuming it's in the same /components folder
-import { getCookie } from '../utils';
+import { API_BASE_BACKEND, getCookie } from '../utils';
 import toast, { Toaster } from 'react-hot-toast';
 
 
@@ -18,8 +18,6 @@ const Layout = ({ children, houseName, onLogout }: {
     
     // --- 2. Add state for the new invite modal ---
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-    const API_BASE_BACKEND = "http://localhost:8000"
-    const API_BASE_FRONTEND = "http://localhost:3000"
     // This new function handles closing the drawer AND opening the modal
     const handleInviteClick = () => {
         setIsDrawerOpen(false);
@@ -64,7 +62,7 @@ const Layout = ({ children, houseName, onLogout }: {
                         {/* 1. Left Column: Logo */}
                         <div className="justify-self-start">
                             <Link href="/home">
-                                <Image
+                                <img
                                     src="/logo.png"
                                     alt="Housify Logo"
                                     className="h-16 w-15 cursor-pointer"

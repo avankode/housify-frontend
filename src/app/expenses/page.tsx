@@ -7,7 +7,7 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useInView } from 'react-intersection-observer'; 
 import Layout from '../components/Layout';
-import { getCookie } from '../utils'; // We still need this for POST requests
+import { API_BASE_BACKEND, getCookie } from '../utils'; // We still need this for POST requests
 
 
 interface UserWhoPaid {
@@ -102,11 +102,9 @@ export default function ExpensesPage() {
                 return null;
             }
             const { start_date , end_date } = edges;
-            const baseUrl = 'http://localhost:8000';
-
             try {
                 const res = await fetch(
-                    `${baseUrl}/api/stats/banner-summary/?start_date=${start_date}&end_date=${end_date}`,{ 
+                    `${API_BASE_BACKEND}/api/stats/banner-summary/?start_date=${start_date}&end_date=${end_date}`,{ 
                         credentials: 'include'
                     } 
                 );
@@ -250,7 +248,6 @@ const MonthPicker: FC<MonthPickerProps> = ({ selectedMonth, onChange }) => (
 const ExpenseList: FC<ExpenseListProps> = ({ activeTab, selectedMonth , onRenewClick }) => {
     
     const getKey = (pageIndex: number, previousPageData: PaginatedExpenses | null): string | null => {
-        const baseUrl = 'http://localhost:8000';
         
         if (!selectedMonth) {
             return null;
@@ -261,7 +258,7 @@ const ExpenseList: FC<ExpenseListProps> = ({ activeTab, selectedMonth , onRenewC
                 return null;
             }
             const { start_date , end_date } = edges;
-            return `${baseUrl}/api/expenses/?category=${activeTab}&start_date=${start_date}&end_date=${end_date}&page=1`;
+            return `${API_BASE_BACKEND}/api/expenses/?category=${activeTab}&start_date=${start_date}&end_date=${end_date}&page=1`;
         }
         if (!previousPageData?.next) return null;
         return previousPageData.next;
@@ -499,11 +496,10 @@ const AddExpenseModal: FC<AddExpenseModalProps> = ({ isOpen, onClose, selectedMo
             return;
         }
         
-        const baseUrl = 'http://localhost:8000';
         const csrftoken = getCookie('csrftoken') || '';
 
         try {
-            const res = await fetch(`${baseUrl}/api/expenses/`, {
+            const res = await fetch(`${API_BASE_BACKEND}/api/expenses/`, {
                 method: 'POST',
                 credentials : 'include',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
