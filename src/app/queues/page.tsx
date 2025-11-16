@@ -7,11 +7,11 @@ import Layout from '../components/Layout';
 import AddItemModal from './components/AddItemModal';
 import InventoryCarousel from "./components/InventoryCarousel";
 import QueueSection from './components/QueueSection';
-import { API_BASE_BACKEND, getCookie } from '../utils';
+import { getCookie } from '../utils';
 import { InventoryItem, QueueItem } from "./../types"
 import toast from 'react-hot-toast';
 
-
+const API_BASE_BACKEND = process.env.API_BASE_BACKEND;
 const GCHAT_WEBHOOK_URL = process.env.NEXT_PUBLIC_GCHAT_WEBHOOK_URL;
 export default function QueuesPage(){
     const { user, isLoading: isUserLoading } = useUser()

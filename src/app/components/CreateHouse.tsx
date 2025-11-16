@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { API_BASE_BACKEND, getCookie } from '../utils';
+import {getCookie } from '../utils';
 import { useRouter } from 'next/navigation'; // NEW: Import the router
 import toast from 'react-hot-toast';
 
@@ -12,7 +12,7 @@ interface CreateHouseProps {
     // onSuccess: (newHouseData: any) => void;
 }
 
-
+const API_BASE_BACKEND = process.env.API_BASE_BACKEND;
 const CreateHouse = ({ showDashboardView }: CreateHouseProps) => {
     const [houseName, setHouseName] = useState('');
     const [suggestions, setSuggestions] = useState<string[]>([]);

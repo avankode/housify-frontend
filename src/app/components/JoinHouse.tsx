@@ -3,9 +3,9 @@
 import React, { useState, useRef } from 'react';
 import img from "next/image";
 import { useRouter } from 'next/navigation'; // NEW: Import the router
-import { API_BASE_BACKEND } from '../utils';
 import toast from 'react-hot-toast';
 
+const API_BASE_BACKEND = process.env.API_BASE_BACKEND;
 const getCookie = (name: string) => {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {

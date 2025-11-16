@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { API_BASE_BACKEND, UserWithHouse } from '../utils';
+import {UserWithHouse } from '../utils';
 import { getCookie} from "../utils";
 
 // Define the shape of our context data
@@ -13,6 +13,7 @@ interface UserContextType {
     fetchUser: () => Promise<void>;
 }
 
+const API_BASE_BACKEND = process.env.API_BASE_BACKEND;
 // Create the context with a default value of undefined
 const UserContext = createContext<UserContextType | undefined>(undefined);
 

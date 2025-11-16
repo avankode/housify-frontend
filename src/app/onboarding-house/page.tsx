@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { API_BASE_BACKEND, getCookie } from '../utils';
+import { getCookie } from '../utils';
 import img from "next/image";
 import { useUser } from '../context/UserContext';
 import toast from 'react-hot-toast';
 
 // --- Child Component: CreateHouse ---
 // This is the component you provided, with a few modifications.
+const API_BASE_BACKEND = process.env.API_BASE_BACKEND;
 
 const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
     const [houseName, setHouseName] = useState('');

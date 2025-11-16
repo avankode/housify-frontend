@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { API_BASE_BACKEND, UserWithHouse } from '../utils';
+import {  UserWithHouse } from '../utils';
 import Link from 'next/link';
 import {getCookie} from "@/src/app/utils";
 import img from "next/image";
 
 // --- Reusable UI Components ---
+const API_BASE_BACKEND = process.env.API_BASE_BACKEND;
 
 const Modal = ({ isOpen, children }: { isOpen: boolean; onClose?: () => void; children: React.ReactNode }) => {
     if (!isOpen) return null;

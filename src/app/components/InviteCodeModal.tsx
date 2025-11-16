@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { API_BASE_BACKEND, getCookie } from '../utils';
+import {getCookie } from '../utils';
 
 
 // This component expects one prop: a function to call when it should close.
 interface InviteCodeModalProps {
     onClose: () => void;
 }
-
+const API_BASE_BACKEND = process.env.API_BASE_BACKEND;
 export default function InviteCodeModal({ onClose }: InviteCodeModalProps) {
 
     const [code, setCode] = useState<string | null>(null);

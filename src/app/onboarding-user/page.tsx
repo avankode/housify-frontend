@@ -6,9 +6,9 @@ import { useRouter } from 'next/navigation';
 import img from "next/image";
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
-import { API_BASE_BACKEND } from '../utils';
 import toast from 'react-hot-toast';
 
+const API_BASE_BACKEND = process.env.API_BASE_BACKEND;
 // Helper function to get the CSRF token
 const getCookie = (name: string) => {
     let cookieValue = null;

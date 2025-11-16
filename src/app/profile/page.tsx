@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { API_BASE_BACKEND, UserWithHouse } from '../utils';
+import { UserWithHouse } from '../utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // Import the router hook
 import img from "next/image";
 
+const API_BASE_BACKEND = process.env.API_BASE_BACKEND;
 export default function ProfilePage() {
     const [user, setUser] = useState<UserWithHouse | null>(null);
     const [loading, setLoading] = useState(true);

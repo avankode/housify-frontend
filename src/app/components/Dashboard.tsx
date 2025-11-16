@@ -3,9 +3,10 @@
 "use client";
 
 import React, { useState } from 'react';
-import { API_BASE_BACKEND, getCookie, User } from '../utils'; // Import from utils
+import {getCookie, User } from '../utils'; // Import from utils
 import toast from 'react-hot-toast';
 
+const API_BASE_BACKEND = process.env.API_BASE_BACKEND;
 const Dashboard = ({ user, showCreateHouseView, showJoinHouseView, onLogout }: {
     user: User;
     showCreateHouseView: () => void;

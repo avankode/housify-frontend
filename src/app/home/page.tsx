@@ -5,9 +5,10 @@
 import React, { useState, useEffect , Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Layout from '../components/Layout';
-import {API_BASE_BACKEND, getCookie} from "@/src/app/utils";
+import {getCookie} from "@/src/app/utils";
 import Link from 'next/link';
 
+const API_BASE_BACKEND = process.env.API_BASE_BACKEND;
 const DashboardTile = ({ title, color, href, children }: {
     title: string;
     color: string;

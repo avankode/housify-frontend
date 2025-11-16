@@ -5,8 +5,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '../context/UserContext';
 // import { API_BASE } from '@/utils/apiBase';
 import Link from 'next/link';
-import { API_BASE_BACKEND, API_BASE_FRONTEND, getCookie } from '../utils';
+import { getCookie } from '../utils';
 
+const API_BASE_BACKEND = process.env.API_BASE_BACKEND;
+const API_BASE_FRONTEND = process.env.API_BASE_FRONTEND;
 // A client component that does all the work
 function JoinPageClient() {
     const router = useRouter();

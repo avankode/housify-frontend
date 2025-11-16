@@ -7,7 +7,7 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useInView } from 'react-intersection-observer'; 
 import Layout from '../components/Layout';
-import { API_BASE_BACKEND, getCookie } from '../utils'; // We still need this for POST requests
+import { getCookie } from '../utils'; // We still need this for POST requests
 import toast from 'react-hot-toast';
 
 
@@ -58,6 +58,7 @@ interface ExpenseListProps {
     selectedMonth: Date | null;
     onRenewClick : (item: Expense) => void;
 }
+const API_BASE_BACKEND = process.env.API_BASE_BACKEND;
 // This fetcher is for GET requests, so we REMOVE the CSRF token header.
 const fetcher = (url: string) => {
     return fetch(url, {

@@ -4,8 +4,8 @@
 
 import React from 'react';
 import img from "next/image";
-import { API_BASE_BACKEND } from '../utils';
 
+const API_BASE_BACKEND = process.env.API_BASE_BACKEND;
 const LoginPage = () => {
     return (
         <main className="flex min-h-screen flex-col items-center justify-center bg-green-50 p-4">

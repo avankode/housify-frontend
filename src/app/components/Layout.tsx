@@ -5,10 +5,11 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import img from 'next/image'; // This import is unused, your code uses <img>
 import InviteCodeModal from './InviteCodeModal'; // Assuming it's in the same /components folder
-import { API_BASE_BACKEND, API_BASE_FRONTEND, getCookie } from '../utils';
+import { getCookie } from '../utils';
 import toast, { Toaster } from 'react-hot-toast';
 
-
+const API_BASE_BACKEND = process.env.API_BASE_BACKEND;
+const API_BASE_FRONTEND = process.env.API_BASE_FRONTEND;
 const Layout = ({ children, houseName, onLogout }: {
     children: React.ReactNode;
     houseName: string;
