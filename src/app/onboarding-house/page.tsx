@@ -51,6 +51,7 @@ useEffect(() => {
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
                 body: JSON.stringify({ name: houseName }),
             });
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let data: any = {};
             try {
                 if (response.status !== 401 && response.status !== 204) {
@@ -136,6 +137,7 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
                 body: JSON.stringify({ code: fullOtp }),
             });
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let data: any = {};
             try {
                 if (response.status !== 401 && response.status !== 204) {
@@ -231,6 +233,7 @@ export default function OnboardingHousePage() {
                         router.push('/');
                     } else {
                         // The code was bad or expired (This is where Scenario 3 fails)
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         let data: any = {};
                         try {
                             if (response.status !== 204) data = await response.json();
