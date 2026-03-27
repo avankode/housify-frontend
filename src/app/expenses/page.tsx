@@ -124,11 +124,11 @@ export default function ExpensesPage() {
                     const rentalShare = total_shared_rentals / safeMemberCount;
 
                     setBannerData([
-                        { id: 1, text: `House Monthly Share: $${houseShare.toFixed(2)} per member` },
-                        { id: 2, text: `Your Monthly Expense: $${yourShare.toFixed(2)}` },
-                        { id: 3, text: `Your Grocery Share: $${groceryShare.toFixed(2)}` },
-                        { id: 4, text: `Your Rental Share: $${rentalShare.toFixed(2)}` },
-                        { id: 5, text: `Your personal Spendings are: $${your_personal_dues.toFixed(2)}`},
+                        { id: 1, text: `House Monthly Share: ₹${houseShare.toFixed(2)} per member` },
+                        { id: 2, text: `Your Monthly Expense: ₹${yourShare.toFixed(2)}` },
+                        { id: 3, text: `Your Grocery Share: ₹${groceryShare.toFixed(2)}` },
+                        { id: 4, text: `Your Rental Share: ₹${rentalShare.toFixed(2)}` },
+                        { id: 5, text: `Your personal Spendings are: ₹${your_personal_dues.toFixed(2)}`},
                     ]);
                 }
             } catch (error) {
@@ -366,7 +366,7 @@ const GroceryCard: FC<CardProps> = ({ item }) => {
                 
                 {/* ADDED dynamic amount color */}
                 <span className={`text-2xl font-bold ${colors.amount}`}>
-                    ${parseFloat(item.amount).toFixed(2)}
+                    ₹{parseFloat(item.amount).toFixed(2)}
                 </span>
             </div>
         </div>
@@ -384,7 +384,7 @@ const SharedRentalCard: FC<CardProps> = ({ item , onRenew }) => (
                     </p>
                 )}
             </div>
-            <span className="text-2xl font-bold text-blue-900">${parseFloat(item.amount).toFixed(2)}</span>
+            <span className="text-2xl font-bold text-blue-900">₹{parseFloat(item.amount).toFixed(2)}</span>
         </div>
         {item.is_recurring && onRenew && (
             <button 
@@ -407,7 +407,7 @@ const PersonalDueCard: FC<CardProps> = ({ item , onRenew}) => (
                     </p>
                 )}
             </div>
-            <span className="text-2xl font-bold text-purple-900">${parseFloat(item.amount).toFixed(2)}</span>
+            <span className="text-2xl font-bold text-purple-900">₹{parseFloat(item.amount).toFixed(2)}</span>
         </div>
         {item.is_recurring && onRenew && (
             <button 

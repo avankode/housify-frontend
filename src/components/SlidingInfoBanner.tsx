@@ -45,7 +45,7 @@ const SlidingInfoBanner = ({ items } : SlidingInfoBannerProps) => {
  return (
 
 
-        <div className="relative w-full h-40 bg-lime-100 overflow-hidden shadow-lg text-lime-900">
+        <div className="relative w-full h-40 bg-white-800 overflow-hidden shadow-lg text-blue-100">
             <div
                 className="absolute bottom-0 left-0 w-full bg-black/75 z-10 transition-all ease-out duration-[2500ms]"
                 style={{

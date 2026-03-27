@@ -17,33 +17,23 @@ const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
     const [suggestionError, setSuggestionError] = useState(false);
     const router = useRouter();
     
-    useEffect(() => {
-        // ... (The AI suggestion logic remains unchanged)
+useEffect(() => {
         if (houseName.length < 3) {
             setSuggestions([]);
             return;
         }
+
         setIsSuggesting(true);
         setSuggestionError(false);
+
         const handler = setTimeout(() => {
-            fetch(`${API_BASE_BACKEND}/api/houses/suggest-name/`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
-                body: JSON.stringify({ name: houseName }),
-            })
-                .then(res => {
-                    if (!res.ok) throw new Error('Backend responded with an error');
-                    return res.json();
-                })
-                .then(data => setSuggestions(data.suggestions || []))
-                .catch(error => {
-                    console.error("Error fetching suggestions:", error);
-                    setSuggestions([]);
-                    setSuggestionError(true);
-                })
-                .finally(() => setIsSuggesting(false));
+            // Hardcoded response instead of the API fetch
+            const mockData = { suggestions: ["The Best House Ever"] };
+            
+            setSuggestions(mockData.suggestions);
+            setIsSuggesting(false);
         }, 700);
+
         return () => clearTimeout(handler);
     }, [houseName]);
 
@@ -61,10 +51,20 @@ const CreateHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
                 body: JSON.stringify({ name: houseName }),
             });
-            const data = await response.json();
+            let data: any = {};
+            try {
+                if (response.status !== 401 && response.status !== 204) {
+                    data = await response.json();
+                }
+            } catch (err) {
+                console.warn("Could not parse JSON response");
+            }
             if (response.ok) {
                 // UPDATED: The component now handles its own redirect.
                 router.push('/home?new=true');
+            } else if (response.status === 401) {
+                toast.error("Session expired. Please log in again.");
+                router.push('/');
             } else {
                 toast.error(`Error: ${data.name || 'Could not create house.'}`);
             }
@@ -136,10 +136,20 @@ const JoinHouse = ({ showChoiceView }: { showChoiceView: () => void; }) => {
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
                 body: JSON.stringify({ code: fullOtp }),
             });
-            const data = await response.json();
+            let data: any = {};
+            try {
+                if (response.status !== 401 && response.status !== 204) {
+                    data = await response.json();
+                }
+            } catch (err) {
+                console.warn("Could not parse JSON response");
+            }
             if (response.ok) {
                 // UPDATED: The component now handles its own redirect.
                 router.push('/home?new=true');
+            } else if (response.status === 401) {
+                toast.error("Session expired. Please log in again.");
+                router.push('/');
             } else {
                 toast.error(`Error: ${data.error || 'Failed to join house'}`);
             }
@@ -214,9 +224,17 @@ export default function OnboardingHousePage() {
                         localStorage.removeItem('pendingInviteCode'); // Success!
                         await fetchUser(); // Re-fetch user data to update context
                         router.push('/home?new=true'); // Go to home!
+                    } else if (response.status === 401) {
+                        localStorage.removeItem('pendingInviteCode');
+                        setView('CHOICE');
+                        toast.error("Session expired. Please log in again.");
+                        router.push('/');
                     } else {
                         // The code was bad or expired (This is where Scenario 3 fails)
-                        const data = await response.json();
+                        let data: any = {};
+                        try {
+                            if (response.status !== 204) data = await response.json();
+                        } catch (err) {}
                         localStorage.removeItem('pendingInviteCode');
                         setView('CHOICE'); // Show them the normal page
                         toast.error(`Invite Error: ${data.error || "Invalid or expired."}`);
