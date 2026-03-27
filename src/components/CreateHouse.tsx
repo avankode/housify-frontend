@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { API_BASE_BACKEND, getCookie } from '../utils';
+import { API_BASE_BACKEND, getCookie } from '@/src/app/utils';
 import { useRouter } from 'next/navigation'; // NEW: Import the router
 import toast from 'react-hot-toast';
 

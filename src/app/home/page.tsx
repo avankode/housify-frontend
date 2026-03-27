@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect , Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import Layout from '../components/Layout';
+import Layout from '@/src/components/Layout';
 import {API_BASE_BACKEND, getCookie} from "@/src/app/utils";
 import Link from 'next/link';
 

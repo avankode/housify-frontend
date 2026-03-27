@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import img from 'next/image'; // This import is unused, your code uses <img>
 import InviteCodeModal from './InviteCodeModal'; // Assuming it's in the same /components folder
-import { API_BASE_BACKEND, API_BASE_FRONTEND, getCookie } from '../utils';
+import { API_BASE_BACKEND, API_BASE_FRONTEND, getCookie } from '@/src/app/utils';
 import toast, { Toaster } from 'react-hot-toast';
 
 

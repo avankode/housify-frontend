@@ -4,7 +4,7 @@
 
 import React from 'react';
 import img from "next/image";
-import { API_BASE_BACKEND } from '../utils';
+import { API_BASE_BACKEND } from '@/src/app/utils';
 
 const LoginPage = () => {
     return (

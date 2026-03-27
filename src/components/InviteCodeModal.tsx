@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { API_BASE_BACKEND, getCookie } from '../utils';
+import { API_BASE_BACKEND, getCookie } from '@/src/app/utils';
 
 
 // This component expects one prop: a function to call when it should close.

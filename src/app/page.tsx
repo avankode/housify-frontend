@@ -4,7 +4,7 @@
 
 import Link from 'next/link';
 import { motion, Variants } from 'framer-motion';
-import img from "next/image";
+import Image from "next/image";
 
 // You can get these icons from a library like lucide-react, or use them as is.
 const ArrowRightIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -75,7 +75,7 @@ export default function LandingPage() {
                 className="flex flex-col items-center justify-center space-y-8 px-4 text-center"
             >
                 <motion.div variants={FADE_IN_ANIMATION_VARIANTS}>
-                    <img
+                    <Image
                         src="/logo.png"
                         alt="Housify Logo"
                         width={200}

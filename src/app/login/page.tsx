@@ -21,7 +21,7 @@ const LoginPage = () => {
                 </h1>
                 <p className="mb-8 text-gray-600">Your shared home, simplified.</p>
                 <a
-                    href={`${API_BASE_BACKEND}/accounts/google/login/`}
+                    href={`${API_BASE_BACKEND}/accounts/google/login`}
                     className="group inline-flex w-full items-center justify-center rounded-md bg-black px-4 py-3 text-lg font-semibold text-white transition-transform duration-200 hover:scale-105"
                 >
                     <svg className="mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">

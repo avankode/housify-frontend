@@ -1,12 +1,12 @@
 "use client";
 import React, { useState, useEffect, useMemo, FC } from 'react';
-import SlidingInfoBanner from '../components/SlidingInfoBanner';
+import SlidingInfoBanner from '@/src/components/SlidingInfoBanner';
 import Link from 'next/link';
 import useSWRInfinite from 'swr/infinite';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useInView } from 'react-intersection-observer'; 
-import Layout from '../components/Layout';
+import Layout from '@/src/components/Layout';
 import { API_BASE_BACKEND, getCookie } from '../utils'; // We still need this for POST requests
 import toast from 'react-hot-toast';
 

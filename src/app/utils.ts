@@ -43,5 +43,4 @@ export const getCookie = (name: string) => {
     return cookieValue;
 }
 
-export const API_BASE_BACKEND = 'http://localhost:8000';
-export const API_BASE_FRONTEND = 'http://localhost:3000';
+export * from '@/src/lib/constants';

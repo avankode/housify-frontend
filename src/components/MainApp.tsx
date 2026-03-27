@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Layout from './Layout';
-import { UserWithHouse } from '../utils';
+import { UserWithHouse } from '@/src/app/utils';
 
 const MainApp = ({ userData, onLogout, showAnimation }: {
     userData: UserWithHouse;

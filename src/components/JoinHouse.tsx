@@ -3,7 +3,7 @@
 import React, { useState, useRef } from 'react';
 import img from "next/image";
 import { useRouter } from 'next/navigation'; // NEW: Import the router
-import { API_BASE_BACKEND } from '../utils';
+import { API_BASE_BACKEND } from '@/src/app/utils';
 import toast from 'react-hot-toast';
 
 const getCookie = (name: string) => {

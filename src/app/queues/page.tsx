@@ -3,7 +3,7 @@
 import React, { useState, useEffect ,useCallback } from 'react';
 import { useUser } from '../context/UserContext';
 import { useRouter } from 'next/navigation';
-import Layout from '../components/Layout';
+import Layout from '@/src/components/Layout';
 import AddItemModal from './components/AddItemModal';
 import InventoryCarousel from "./components/InventoryCarousel";
 import QueueSection from './components/QueueSection';
