@@ -7,6 +7,7 @@ import img from 'next/image'; // This import is unused, your code uses <img>
 import InviteCodeModal from './InviteCodeModal'; // Assuming it's in the same /components folder
 import { API_BASE_BACKEND, API_BASE_FRONTEND, getCookie } from '@/src/app/utils';
 import toast, { Toaster } from 'react-hot-toast';
+import { useUser } from '@/src/app/context/UserContext';
 
 
 const Layout = ({ children, houseName, onLogout }: {
@@ -15,7 +16,14 @@ const Layout = ({ children, houseName, onLogout }: {
     onLogout?: () => void;
 }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    
+    const { user } = useUser();
+
+    const adminId = user?.house?.admin?.id;
+    const members = user?.house?.members ?? [];
+    const admin = members.find(m => m.id === adminId);
+    const nonAdminMembers = members.filter(m => m.id !== adminId);
+    const orderedMembers = admin ? [admin, ...nonAdminMembers] : nonAdminMembers;
+
     // --- 2. Add state for the new invite modal ---
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     // This new function handles closing the drawer AND opening the modal
@@ -109,7 +117,28 @@ const Layout = ({ children, houseName, onLogout }: {
                 className={`fixed top-0 right-0 h-full w-72 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out ${isDrawerOpen ? 'translate-x-0' : 'translate-x-full'}`}
             >
                 <div className="p-6">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-8">Menu</h2>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">Menu</h2>
+
+                    {orderedMembers.length > 0 && (
+                        <div className="mb-6">
+                            {orderedMembers.map(member => (
+                                <div key={member.id} className="flex items-center space-x-3 py-2">
+                                    <img
+                                        src={member.profile_photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.display_name)}&background=random`}
+                                        alt={member.display_name}
+                                        className="w-9 h-9 rounded-full object-cover flex-shrink-0"
+                                    />
+                                    <span className="text-sm font-medium text-gray-800">{member.display_name}</span>
+                                    {member.id === adminId && (
+                                        <span className="text-xs text-green-600 font-semibold">Admin</span>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    <hr className="border-gray-200 mb-4" />
+
                     <nav className="flex flex-col space-y-4">
                         <Link href="/profile" onClick={() => setIsDrawerOpen(false)} className="flex items-center text-lg text-gray-700 hover:text-green-600 py-2 rounded-md hover:bg-gray-100">
                             {/* ... (Profile icon) ... */}

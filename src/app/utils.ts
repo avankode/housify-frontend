@@ -8,6 +8,7 @@ export interface House {
     admin: {
         id: number;
         username: string;
+        display_name: string;
     };
     members: UserWithHouse[];
 }

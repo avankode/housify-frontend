@@ -60,9 +60,9 @@ export default function ProfilePage() {
                 <div className="p-8">
                     <div className="text-center">
                         <img
-                            src={`${API_BASE_BACKEND}${user.profile.profile_photo}`}
+                            src={user.profile_photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.profile.display_name)}&background=random&size=128`}
                             alt="Profile"
-                            className="w-32 h-32 rounded-full mx-auto border-4 border-green-200"
+                            className="w-32 h-32 rounded-full mx-auto border-4 border-green-200 object-cover"
                         />
                         <h1 className="text-3xl font-bold text-gray-800 mt-4">
                             {user.profile.display_name}

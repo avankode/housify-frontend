@@ -33,7 +33,7 @@ const MainApp = ({ userData, onLogout, showAnimation }: {
                         animationPhase === 'visible' ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-10'
                     }`}
                     >
-                        Hey {userData.username}, Welcome to {userData.house?.name}!
+                        Hey {userData.display_name}, Welcome to {userData.house?.name}!
                     </h1>
                 </div>
             )}
