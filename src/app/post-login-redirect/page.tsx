@@ -1,42 +1,66 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { API_BASE_BACKEND, UserWithHouse } from "../utils";
 
 export default function PostLoginRedirectPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const run = async () => {
       try {
-        const response = await fetch(`${API_BASE_BACKEND}/api/user/`, {
-          credentials: "include",
-        });
+        const lt = searchParams.get("lt");
 
-        // If not authenticated at all, send back to login
-        if (response.status === 401) {
-          router.replace("/login");
-          return;
+        let user: UserWithHouse;
+
+        if (lt) {
+          // Token exchange: POST to backend with the one-time token.
+          // The backend sets a session cookie on the onrender.com domain in this response.
+          const exchangeResponse = await fetch(
+            `${API_BASE_BACKEND}/api/auth/exchange-token/?lt=${encodeURIComponent(lt)}`,
+            {
+              method: "POST",
+              credentials: "include",
+            }
+          );
+
+          if (!exchangeResponse.ok) {
+            console.error("Token exchange failed:", exchangeResponse.status);
+            router.replace("/login");
+            return;
+          }
+
+          user = await exchangeResponse.json();
+        } else {
+          // Fallback: try existing session (for already-logged-in users)
+          const response = await fetch(`${API_BASE_BACKEND}/api/user/`, {
+            credentials: "include",
+          });
+
+          if (response.status === 401) {
+            router.replace("/login");
+            return;
+          }
+
+          if (!response.ok) {
+            router.replace("/");
+            return;
+          }
+
+          user = await response.json();
         }
-
-        if (!response.ok) {
-          // Fallback: send to landing page on unexpected error
-          router.replace("/");
-          return;
-        }
-
-        const user: UserWithHouse = await response.json();
 
         // --- Branching logic ---
 
-        // 1) No user or missing id/email: treat as "not fully signed up"
+        // 1) No user or missing id/email
         if (!user || !user.id || !user.email) {
           router.replace("/onboarding-user");
           return;
         }
 
-        // 2) Signed up but profile incomplete (example checks – tweak as needed)
+        // 2) Profile incomplete
         const profile = user.profile;
         const hasDisplayName = !!(profile?.display_name || user.display_name);
         const hasPhone = !!profile?.phone_number;
@@ -56,13 +80,12 @@ export default function PostLoginRedirectPage() {
         router.replace("/home?new=true");
       } catch (error) {
         console.error("Error during post-login redirect:", error);
-        // Safe fallback on error
         router.replace("/");
       }
     };
 
     run();
-  }, [router]);
+  }, [router, searchParams]);
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-100">
