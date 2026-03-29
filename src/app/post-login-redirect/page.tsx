@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { API_BASE_BACKEND, UserWithHouse } from "../utils";
 
-export default function PostLoginRedirectPage() {
+function PostLoginRedirect() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -91,5 +91,19 @@ export default function PostLoginRedirectPage() {
     <main className="flex min-h-screen items-center justify-center bg-gray-100">
       <p className="text-gray-600 text-lg">Finishing sign-in…</p>
     </main>
+  );
+}
+
+export default function PostLoginRedirectPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex min-h-screen items-center justify-center bg-gray-100">
+          <p className="text-gray-600 text-lg">Finishing sign-in…</p>
+        </main>
+      }
+    >
+      <PostLoginRedirect />
+    </Suspense>
   );
 }
