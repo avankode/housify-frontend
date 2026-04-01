@@ -1,34 +1,45 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { API_BASE_BACKEND, UserWithHouse } from "../utils";
 
-export default function PostLoginRedirectPage() {
+function PostLoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const run = async () => {
-      try {
-        const response = await fetch(`${API_BASE_BACKEND}/api/user/`, {
-          credentials: "include",
-        });
+      const lt = searchParams.get("lt");
 
-        // If not authenticated at all, send back to login
+      if (!lt) {
+        router.replace("/login");
+        return;
+      }
+
+      try {
+        // Exchange the one-time login token for a session cookie.
+        // Using credentials:"include" ensures the browser stores the Set-Cookie
+        // from the response, establishing a valid session for all subsequent calls.
+        const response = await fetch(
+          `${API_BASE_BACKEND}/api/auth/exchange-token/?lt=${encodeURIComponent(lt)}`,
+          {
+            method: "POST",
+            credentials: "include",
+          }
+        );
+
         if (response.status === 401) {
           router.replace("/login");
           return;
         }
 
         if (!response.ok) {
-          // Fallback: send to landing page on unexpected error
           router.replace("/");
           return;
         }
 
         const user: UserWithHouse = await response.json();
-
-        // --- Branching logic ---
 
         // 1) No user or missing id/email: treat as "not fully signed up"
         if (!user || !user.id || !user.email) {
@@ -36,7 +47,7 @@ export default function PostLoginRedirectPage() {
           return;
         }
 
-        // 2) Signed up but profile incomplete (example checks – tweak as needed)
+        // 2) Profile incomplete
         const profile = user.profile;
         const hasDisplayName = !!(profile?.display_name || user.display_name);
         const hasPhone = !!profile?.phone_number;
@@ -46,27 +57,40 @@ export default function PostLoginRedirectPage() {
           return;
         }
 
-        // 3) Profile OK, but no house yet
+        // 3) Profile OK but no house yet
         if (!user.house) {
           router.replace("/onboarding-house");
           return;
         }
 
-        // 4) Has house: go to home dashboard
+        // 4) Fully set up — go to dashboard
         router.replace("/home?new=true");
       } catch (error) {
         console.error("Error during post-login redirect:", error);
-        // Safe fallback on error
         router.replace("/");
       }
     };
 
     run();
-  }, [router]);
+  }, [router, searchParams]);
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-100">
       <p className="text-gray-600 text-lg">Finishing sign-in…</p>
     </main>
+  );
+}
+
+export default function PostLoginRedirectPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex min-h-screen items-center justify-center bg-gray-100">
+          <p className="text-gray-600 text-lg">Finishing sign-in…</p>
+        </main>
+      }
+    >
+      <PostLoginContent />
+    </Suspense>
   );
 }
